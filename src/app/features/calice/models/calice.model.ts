@@ -11,8 +11,8 @@ export interface Calice {
 	cobExterno: number
 	cobInterno: number
 	concreto: Concreto
-	armHorzPrincipal?: Armadura
-	armHorzSecundaria?: Armadura
-	armVertPrincipal?: Armadura
-	armVertSecundaria?: Armadura
+	armHorzPrincipal: Armadura | undefined
+	armHorzSecundaria: Armadura | undefined
+	armVertPrincipal: Armadura | undefined
+	armVertSecundaria: Armadura | undefined
 }

@@ -6,7 +6,7 @@
 	<mat-drawer #drawer mode="side" opened="true">
 		<div class="list-group list-group-flush">
 			<div class="list-group-item list-group-item-action" (click)="toggle('calice')">
-				<span class="h3">Cálice</span>
+				<span class="h4">Cálice</span>
 				<div class="list-group list-group-flush" *ngIf="visible('calice')">
 					<div class="list-group-item list-group-item-action w-100" (click)="redirect('calice/detalhamento'); drawer.toggle()">Detalhamento</div>
 					<!-- <div class="list-group-item list-group-item-action" (click)="$event.stopPropagation()" disabled>Dimensionamento</div> -->

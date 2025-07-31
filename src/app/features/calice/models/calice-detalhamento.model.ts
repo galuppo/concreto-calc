@@ -36,7 +36,11 @@ export class CaliceDetalhamento {
 			embutimento: 0,
 			cobExterno: 0,
 			cobInterno: 0,
-			concreto: ClassesConcreto.C20
+			concreto: ClassesConcreto.C20,
+			armHorzPrincipal: undefined,
+			armHorzSecundaria: undefined,
+			armVertPrincipal: undefined,
+			armVertSecundaria: undefined
 		};
 		this.model = c;
 		this.seeder = seeder;
@@ -1019,7 +1023,7 @@ export class CaliceDetalhamento {
 			quantidade: this.model.armHorzSecundaria!.quantidade,
 			multiplo: 1
 		});
-		n3.espacamento = round(((this.model.embutimento - 2 * (this.model.embutimento / 3) - this.model.cobExterno)) / (n3.quantidade + 1), 0);
+		n3.espacamento = round((this.model.embutimento / 3) / (n3.quantidade + 1), 0);
 		const largura = this.model.espessuraColarinho - (this.model.cobExterno + this.model.cobInterno);
 		const altura = 2 * (this.model.espessuraColarinho + this.model.espessuraJunta) + this.model.pilarX - 2 * this.model.cobExterno;
 		const gancho = roundUp(n3.barra.dmm, 0);
@@ -1034,7 +1038,7 @@ export class CaliceDetalhamento {
 			quantidade: this.model.armHorzSecundaria!.quantidade,
 			multiplo: 1
 		});
-		n4.espacamento = round(((this.model.embutimento - 2 * (this.model.embutimento / 3) - this.model.cobExterno)) / (n4.quantidade + 1), 0);
+		n4.espacamento = round((this.model.embutimento / 3) / (n4.quantidade + 1), 0);
 		const largura = this.model.espessuraColarinho - (this.model.cobExterno + this.model.cobInterno);
 		const altura = 2 * (this.model.espessuraColarinho + this.model.espessuraJunta) + this.model.pilarY - 2 * this.model.cobExterno;
 		const gancho = roundUp(n4.barra.dmm, 0);

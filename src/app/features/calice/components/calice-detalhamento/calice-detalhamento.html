@@ -1,3 +1,195 @@
 <div class="w-100" style="min-height: 600px; min-width: 800px;">
-	<dxf-view></dxf-view>
+	<mat-card appearance="outlined">
+		<mat-card-header class="m-2">
+			<mat-card-title>Cálice</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<form>
+				<table [cellSpacing]="0">
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Identificador</mat-label>
+								<input name="nome" matInput [(ngModel)]="model.nome">
+							</mat-form-field>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Pilar X</mat-label>
+								<input name="pilarX" matInput [(ngModel)]="model.pilarX" type="number">
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Pilar Y</mat-label>
+								<input name="pilarY" matInput [(ngModel)]="model.pilarY" type="number">
+							</mat-form-field>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Espessura colarinho</mat-label>
+								<input name="espessuraColarinho" matInput [(ngModel)]="model.espessuraColarinho" type="number">
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Espessura junta</mat-label>
+								<input name="espessuraJunta" matInput [(ngModel)]="model.espessuraJunta" type="number">
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Embutimento</mat-label>
+								<input name="embutimento" matInput [(ngModel)]="model.embutimento" type="number">
+							</mat-form-field>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Concreto</mat-label>
+								<mat-select name="concreto" [(value)]="model.concreto">
+									<mat-option [value]="classesConcreto[0]">C20</mat-option>
+									<mat-option [value]="classesConcreto[1]">C25</mat-option>
+									<mat-option [value]="classesConcreto[2]">C30</mat-option>
+									<mat-option [value]="classesConcreto[3]">C35</mat-option>
+									<mat-option [value]="classesConcreto[4]">C40</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</td>
+					</tr>
+					<tr>
+						<mat-label>Armadura Horizontal Principal</mat-label>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Diâmetro</mat-label>
+								<mat-select name="asHorzPrinDiam" [(value)]="model.armHorzPrincipal!.barra">
+									<mat-option [value]="barrasAco[0]">Ø5</mat-option>
+									<mat-option [value]="barrasAco[1]">Ø6.3</mat-option>
+									<mat-option [value]="barrasAco[2]">Ø8</mat-option>
+									<mat-option [value]="barrasAco[3]">Ø10</mat-option>
+									<mat-option [value]="barrasAco[4]">Ø12.5</mat-option>
+									<mat-option [value]="barrasAco[5]">Ø16</mat-option>
+									<mat-option [value]="barrasAco[6]">Ø20</mat-option>
+									<mat-option [value]="barrasAco[7]">Ø25</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Quantidade</mat-label>
+								<input name="asHorzPrincQuant" matInput type="number"
+									[(ngModel)]="model.armHorzPrincipal!.quantidade">
+							</mat-form-field>
+						</td>
+						<td>							
+							<mat-label>As: {{calculaAsEfetivo(model.armHorzPrincipal!)*2}} cm²</mat-label>							
+						</td>
+					</tr>
+					<tr>
+						<mat-label>Armadura Horizontal Secundária</mat-label>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Diâmetro</mat-label>
+								<mat-select name="asHorzSecDiam" [(value)]="model.armHorzSecundaria!.barra">
+									<mat-option [value]="barrasAco[0]">Ø5</mat-option>
+									<mat-option [value]="barrasAco[1]">Ø6.3</mat-option>
+									<mat-option [value]="barrasAco[2]">Ø8</mat-option>
+									<mat-option [value]="barrasAco[3]">Ø10</mat-option>
+									<mat-option [value]="barrasAco[4]">Ø12.5</mat-option>
+									<mat-option [value]="barrasAco[5]">Ø16</mat-option>
+									<mat-option [value]="barrasAco[6]">Ø20</mat-option>
+									<mat-option [value]="barrasAco[7]">Ø25</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Quantidade</mat-label>
+								<input name="asHorzSecQuant" matInput type="number"
+									[(ngModel)]="model.armHorzSecundaria!.quantidade">
+							</mat-form-field>
+						</td>
+						<td>							
+							<mat-label>As: {{calculaAsEfetivo(model.armHorzSecundaria!)*2}} cm²</mat-label>							
+						</td>
+					</tr>
+					<tr>
+						<mat-label>Armadura Vertical Principal</mat-label>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Diâmetro</mat-label>
+								<mat-select name="asVertPrincDiam" [(value)]="model.armVertPrincipal!.barra">
+									<mat-option [value]="barrasAco[0]">Ø5</mat-option>
+									<mat-option [value]="barrasAco[1]">Ø6.3</mat-option>
+									<mat-option [value]="barrasAco[2]">Ø8</mat-option>
+									<mat-option [value]="barrasAco[3]">Ø10</mat-option>
+									<mat-option [value]="barrasAco[4]">Ø12.5</mat-option>
+									<mat-option [value]="barrasAco[5]">Ø16</mat-option>
+									<mat-option [value]="barrasAco[6]">Ø20</mat-option>
+									<mat-option [value]="barrasAco[7]">Ø25</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Quantidade</mat-label>
+								<input name="asVertPrincQuant" matInput type="number"
+									[(ngModel)]="model.armVertPrincipal!.quantidade">
+							</mat-form-field>
+						</td>
+						<td>							
+							<mat-label>As: {{calculaAsEfetivo(model.armVertPrincipal!)*2}} cm²</mat-label>							
+						</td>
+					</tr>
+					<tr>
+						<mat-label>Armadura Vertical Secundária</mat-label>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field>
+								<mat-label>Diâmetro</mat-label>
+								<mat-select name="asVertSecDiam" [(value)]="model.armVertSecundaria!.barra">
+									<mat-option [value]="barrasAco[0]">Ø5</mat-option>
+									<mat-option [value]="barrasAco[1]">Ø6.3</mat-option>
+									<mat-option [value]="barrasAco[2]">Ø8</mat-option>
+									<mat-option [value]="barrasAco[3]">Ø10</mat-option>
+									<mat-option [value]="barrasAco[4]">Ø12.5</mat-option>
+									<mat-option [value]="barrasAco[5]">Ø16</mat-option>
+									<mat-option [value]="barrasAco[6]">Ø20</mat-option>
+									<mat-option [value]="barrasAco[7]">Ø25</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</td>
+						<td>
+							<mat-form-field>
+								<mat-label>Quantidade</mat-label>
+								<input name="asVertSecQuant" matInput type="number"
+									[(ngModel)]="model.armVertSecundaria!.quantidade">
+							</mat-form-field>
+						</td>
+						<td>							
+							<mat-label>As: {{calculaAsEfetivo(model.armVertSecundaria!)*2}} cm²</mat-label>							
+						</td>
+					</tr>
+				</table>
+			</form>
+
+		</mat-card-content>
+		<mat-card-actions>
+			<button mat-flat-button (click)="previsualizar()">Pré-visualizar</button>
+			<a mat-flat-button (click)="download()">Download</a>
+			<a #downloadLink style="display: none;"></a>
+		</mat-card-actions>
+	</mat-card>
 </div>
