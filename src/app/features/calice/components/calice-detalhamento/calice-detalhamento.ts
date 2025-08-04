@@ -7,16 +7,11 @@ import { Armadura } from '../../../armaduras/models/armadura.model';
 import { CaliceDetalhamento } from '../../models/calice-detalhamento.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { round } from '../../../../utils/number-utils';
 import { MatDialog } from '@angular/material/dialog';
 import { DxfViewDialogComponent } from '../../../dxf/components/dxf-view-dialog/dxf-view-dialog';
 import { ArmaduraQuantitativo, ResumoAco } from '../../../armaduras/armadura-quantitativo';
-import { MatTableModule } from '@angular/material/table';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { QuantitativoComponent } from "../../../common/components/quantitativo/quantitativo";
 import { DecimalPipe } from '@angular/common';
 
@@ -26,13 +21,8 @@ import { DecimalPipe } from '@angular/common';
 	imports: [
 		MatCardModule,
 		MatButtonModule,
-		MatIconModule,
 		FormsModule,
 		ReactiveFormsModule,
-		MatInputModule,
-		MatSelectModule,
-		MatTableModule,
-		MatGridListModule,
 		QuantitativoComponent,
 		DecimalPipe
 	],
