@@ -18,6 +18,7 @@ import { ArmaduraQuantitativo, ResumoAco } from '../../../armaduras/armadura-qua
 import { MatTableModule } from '@angular/material/table';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { QuantitativoComponent } from "../../../common/components/quantitativo/quantitativo";
+import { DecimalPipe } from '@angular/common';
 
 @Component({
 	selector: 'calice-detalhamento',
@@ -32,7 +33,8 @@ import { QuantitativoComponent } from "../../../common/components/quantitativo/q
 		MatSelectModule,
 		MatTableModule,
 		MatGridListModule,
-		QuantitativoComponent
+		QuantitativoComponent,
+		DecimalPipe
 	],
 	templateUrl: './calice-detalhamento.html',
 	styleUrl: './calice-detalhamento.scss'
