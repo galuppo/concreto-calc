@@ -4,6 +4,7 @@ import { EntityUtils } from "../../../utils/entity-utils";
 import { directionVector, middlePoint, orthogonalVector, unitaryVector } from "../../../utils/geometry-utils";
 import { round, roundUp } from "../../../utils/number-utils";
 import { ArmaduraDetalhamento, ArmaduraDetalhamentoOptions } from "../../armaduras/armadura-detalhamento";
+import { ArmaduraQuantitativo } from "../../armaduras/armadura-quantitativo";
 import { FormaArmaduraFactory } from "../../armaduras/forma-factory";
 import { Armadura } from "../../armaduras/models/armadura.model";
 import { FormaArmadura } from "../../armaduras/models/forma-armadura.model";
@@ -1379,7 +1380,7 @@ export class CaliceDetalhamento {
 		return ent;
 	}
 
-	criaDetalhamento(calice: Calice): Entity[] {
+	public criaDetalhamento(calice: Calice): Entity[] {
 		const ent: Entity[] = [];
 		this.model = calice;
 
@@ -1397,5 +1398,58 @@ export class CaliceDetalhamento {
 		return ent;
 				
 	}
+
+	public quantificaFerros(calice: Calice): Armadura[] {
+		this.model = calice;
+		const arm: Armadura[] = [
+			this.criaN1(),
+			this.criaN2(),
+			this.criaN3(),
+			this.criaN4(),
+			this.criaN5(),
+			this.criaN6(),
+			this.criaN7()
+		];
+
+		arm[0].multiplo! *= 2;
+		arm[1].multiplo! *= 2;
+		arm[2].multiplo! *= 2;
+		arm[3].multiplo! *= 2;
+		arm[4].multiplo! *= 2;
+		arm[5].multiplo! *= 2;
+
+		return arm;
+	}
+
+	public quantificaForma(calice: Calice): number {
+		let forma = 0;
+		const xExt = 2*(calice.espessuraColarinho+calice.espessuraJunta)+calice.pilarX;
+		const yExt = 2*(calice.espessuraColarinho+calice.espessuraJunta)+calice.pilarY;
+		const xInt = 2*calice.espessuraJunta+calice.pilarX;
+		const yInt = 2*calice.espessuraJunta+calice.pilarY;
+
+		forma += (calice.embutimento)*2*((xExt+yExt));//Forma externa
+		forma += (calice.embutimento+5)*2*((xInt+yInt));//Forma interna
+		forma += xInt*yInt;//Forma fundo
+
+		return forma/(100*100);
+	}
+
+	public quantificaConcreto(calice: Calice): number {
+		let vol = 0;
+
+		const xExt = 2*(calice.espessuraColarinho+calice.espessuraJunta)+calice.pilarX;
+		const yExt = 2*(calice.espessuraColarinho+calice.espessuraJunta)+calice.pilarY;
+		const xInt = 2*calice.espessuraJunta+calice.pilarX;
+		const yInt = 2*calice.espessuraJunta+calice.pilarY;
+
+		vol += calice.embutimento*xExt*yExt;//Volume externo
+		vol -= calice.embutimento*xInt*yInt;//Volume interno
+
+
+		return vol/(100*100*100);
+	}
+	
 }
+
 

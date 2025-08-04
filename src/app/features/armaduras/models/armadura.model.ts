@@ -47,8 +47,12 @@ export class Armadura {
 			id += " c/"+this.espacamento+" cm";
 
 		if(this.forma)
-			id += " C="+this.calculaComprimentoForma()+" cm";
+			id += " C="+this.comprimento+" cm";
 		return id;
+	}
+
+	get comprimento(): number {
+		return this.calculaComprimentoForma();
 	}
 
 	private calculaComprimentoForma(): number {

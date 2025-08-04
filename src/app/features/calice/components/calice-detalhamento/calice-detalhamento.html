@@ -4,7 +4,7 @@
 			<mat-card-title>Cálice</mat-card-title>
 		</mat-card-header>
 		<mat-card-content>
-			<form>
+			<form style="float: left;">
 				<table [cellSpacing]="0">
 					<tr>
 						<td>
@@ -32,7 +32,8 @@
 						<td>
 							<mat-form-field>
 								<mat-label>Espessura colarinho</mat-label>
-								<input name="espessuraColarinho" matInput [(ngModel)]="model.espessuraColarinho" type="number">
+								<input name="espessuraColarinho" matInput [(ngModel)]="model.espessuraColarinho"
+									type="number">
 							</mat-form-field>
 						</td>
 						<td>
@@ -88,8 +89,8 @@
 									[(ngModel)]="model.armHorzPrincipal!.quantidade">
 							</mat-form-field>
 						</td>
-						<td>							
-							<mat-label>As: {{calculaAsEfetivo(model.armHorzPrincipal!)*2}} cm²</mat-label>							
+						<td>
+							<mat-label>As: {{calculaAsEfetivo(model.armHorzPrincipal!)*2}} cm²</mat-label>
 						</td>
 					</tr>
 					<tr>
@@ -118,8 +119,8 @@
 									[(ngModel)]="model.armHorzSecundaria!.quantidade">
 							</mat-form-field>
 						</td>
-						<td>							
-							<mat-label>As: {{calculaAsEfetivo(model.armHorzSecundaria!)*2}} cm²</mat-label>							
+						<td>
+							<mat-label>As: {{calculaAsEfetivo(model.armHorzSecundaria!)*2}} cm²</mat-label>
 						</td>
 					</tr>
 					<tr>
@@ -148,8 +149,8 @@
 									[(ngModel)]="model.armVertPrincipal!.quantidade">
 							</mat-form-field>
 						</td>
-						<td>							
-							<mat-label>As: {{calculaAsEfetivo(model.armVertPrincipal!)*2}} cm²</mat-label>							
+						<td>
+							<mat-label>As: {{calculaAsEfetivo(model.armVertPrincipal!)*2}} cm²</mat-label>
 						</td>
 					</tr>
 					<tr>
@@ -178,17 +179,18 @@
 									[(ngModel)]="model.armVertSecundaria!.quantidade">
 							</mat-form-field>
 						</td>
-						<td>							
-							<mat-label>As: {{calculaAsEfetivo(model.armVertSecundaria!)*2}} cm²</mat-label>							
+						<td>
+							<mat-label>As: {{calculaAsEfetivo(model.armVertSecundaria!)*2}} cm²</mat-label>
 						</td>
 					</tr>
 				</table>
 			</form>
-
+			<quantitativo style="float: right; min-width: 25%;" [volConcreto]="volConcreto" [areaForma]="areaForma" [armaduras]="quantitativoArmadura"></quantitativo>
 		</mat-card-content>
 		<mat-card-actions>
 			<button mat-flat-button (click)="previsualizar()">Pré-visualizar</button>
 			<a mat-flat-button (click)="download()">Download</a>
+			<button mat-flat-button (click)="quantitativo()">Gerar Quantitativo</button>
 			<a #downloadLink style="display: none;"></a>
 		</mat-card-actions>
 	</mat-card>

@@ -1,7 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Writer } from '../../../../../../../dxf-writer/lib';
 import { DxfWriterFactory } from '../../../dxf/dxf-writer-factory';
-import { DxfViewComponent } from "../../../dxf/components/dxf-view/dxf-view";
 import { Calice } from '../../models/calice.model';
 import { ClassesConcreto, Concreto } from '../../../concreto/models/concreto.model';
 import { BarraDeAco, BarrasDeAco } from '../../../armaduras/models/barra-aco.model';
@@ -16,9 +14,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { round } from '../../../../utils/number-utils';
 import { MatDialog } from '@angular/material/dialog';
 import { DxfViewDialogComponent } from '../../../dxf/components/dxf-view-dialog/dxf-view-dialog';
+import { ArmaduraQuantitativo, ResumoAco } from '../../../armaduras/armadura-quantitativo';
+import { MatTableModule } from '@angular/material/table';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { QuantitativoComponent } from "../../../common/components/quantitativo/quantitativo";
 
 @Component({
-	selector: 'app-calice-detalhamento',
+	selector: 'calice-detalhamento',
 	standalone: true,
 	imports: [
 		MatCardModule,
@@ -27,12 +29,16 @@ import { DxfViewDialogComponent } from '../../../dxf/components/dxf-view-dialog/
 		FormsModule,
 		ReactiveFormsModule,
 		MatInputModule,
-		MatSelectModule
+		MatSelectModule,
+		MatTableModule,
+		MatGridListModule,
+		QuantitativoComponent
 	],
 	templateUrl: './calice-detalhamento.html',
 	styleUrl: './calice-detalhamento.scss'
 })
 export class CaliceDetalhamentoComponent {
+
 	protected model: Calice;
 	protected classesConcreto: Concreto[] = [
 		ClassesConcreto.C20,
@@ -50,8 +56,13 @@ export class CaliceDetalhamentoComponent {
 		BarrasDeAco.Ø20,
 		BarrasDeAco.Ø25
 	];
+	protected volConcreto: number = 0;
+	protected areaForma: number = 0;
+	protected quantitativoArmadura: ArmaduraQuantitativo | undefined = undefined;
+	protected resumoAco: ResumoAco[] = [];
 
-	@ViewChild('downloadLink') downloadLinkAnchor! : ElementRef;
+	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
+	@ViewChild(QuantitativoComponent) quantitativoComponent!: QuantitativoComponent;
 
 	constructor(private matDialog: MatDialog) {
 		this.model = {
@@ -113,17 +124,33 @@ export class CaliceDetalhamentoComponent {
 		const dxfWriter = DxfWriterFactory.getNewDefaultWriter();
 		const calDet = new CaliceDetalhamento(dxfWriter.document.seeder);
 		calDet.criaDetalhamento(this.model).forEach((e) => dxfWriter.document.modelSpace.push(e));
-		const dxfBlob = new Blob([dxfWriter.stringify()], {type: 'plain/text'});
+		const dxfBlob = new Blob([dxfWriter.stringify()], { type: 'plain/text' });
 
 		return URL.createObjectURL(dxfBlob);
 	}
 
 	download() {
-		if(this.downloadLinkAnchor) {
+		if (this.downloadLinkAnchor) {
 			(this.downloadLinkAnchor.nativeElement as HTMLAnchorElement).href = this.getDxfFileUrl();
-			(this.downloadLinkAnchor.nativeElement as HTMLAnchorElement).download = this.model.nome+".dxf";
+			(this.downloadLinkAnchor.nativeElement as HTMLAnchorElement).download = this.model.nome + ".dxf";
 			this.downloadLinkAnchor.nativeElement.click();
 		}
+	}
+
+	quantitativo() {
+		const dxfWriter = DxfWriterFactory.getNewDefaultWriter();
+		const calDet = new CaliceDetalhamento(dxfWriter.document.seeder);
+		const qArmadura = new ArmaduraQuantitativo();
+
+		calDet.quantificaFerros(this.model).forEach((f) => {
+			qArmadura.addBarra(this.model.nome, f);
+		});
+
+		const resumo = qArmadura.getResumoAco();
+
+		this.volConcreto = calDet.quantificaConcreto(this.model);
+		this.areaForma = calDet.quantificaForma(this.model);
+		this.quantitativoArmadura = qArmadura;
 	}
 
 }

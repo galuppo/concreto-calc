@@ -1,0 +1,108 @@
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>Quantitativos</mat-card-title>
+	</mat-card-header>
+	<mat-card-content class="mt-3">
+		<ng-container *ngIf="volConcreto">
+			<div class="input-group">
+				<span class="input-group-text w-25 justify-content-end">Concreto: </span>
+				<input type="text" class="form-control" value="{{round(volConcreto) | number: '1.2-2'}} m³" disabled>
+			</div>
+		</ng-container>
+		<ng-container *ngIf="areaForma">
+			<div class="input-group">
+				<span class="input-group-text w-25 justify-content-end">Forma: </span>
+				<input type="text" class="form-control" value="{{round(areaForma) | number: '1.2-2'}} m²" disabled>
+			</div>
+		</ng-container>
+		<ng-container *ngIf="armaduras">
+			<!-- Tabela resumo de aço -->
+			<div class="mt-3">
+				<span class="h5">Resumo de aço</span>
+				<table mat-table [dataSource]="dsResumo" class="mt-3">
+					<ng-container matColumnDef="bitola">
+						<th mat-header-cell *matHeaderCellDef>Ø</th>
+						<td mat-cell *matCellDef="let bit">{{bit.bitola | number: '1.1-1'}} mm</td>
+						<td mat-footer-cell *matFooterCellDef></td>
+					</ng-container>
+					<ng-container matColumnDef="compTotal">
+						<th mat-header-cell *matHeaderCellDef>Comp. Total</th>
+						<td mat-cell *matCellDef="let bit">{{bit.compTotal | number: '1.2-2'}} m</td>
+						<td mat-footer-cell *matFooterCellDef></td>
+					</ng-container>
+					<ng-container matColumnDef="pesoTotal">
+						<th mat-header-cell *matHeaderCellDef>Peso Total</th>
+						<td mat-cell *matCellDef="let bit">{{bit.pesoTotal | number: '1.2-2'}} kg</td>
+						<td mat-footer-cell *matFooterCellDef class="fw-bold">Total: {{totalAco | number: '1.2-2'}} kg</td>
+					</ng-container>
+					<tr mat-header-row *matHeaderRowDef="['bitola','compTotal','pesoTotal']"></tr>
+					<tr mat-row *matRowDef="let row; columns: ['bitola','compTotal','pesoTotal'];"></tr>
+					<tr mat-footer-row *matFooterRowDef="['bitola','compTotal','pesoTotal']"></tr>
+				</table>
+			</div>
+			<!-- Tabela dos ferros por elemento -->
+			<div class="mt-3">
+				<span class="h5">Tabela de Ferros</span>
+				<table mat-table [dataSource]="elementos" class="mt-3" multiTemplateDataRows>
+					<ng-container matColumnDef="elemento">
+						<th mat-header-cell *matHeaderCellDef></th>
+						<td mat-cell *matCellDef="let el" class="text-center fw-bold fs-5" [attr.colspan]="6">{{el}}</td>
+					</ng-container>
+					<ng-container matColumnDef="ferro">
+						<th mat-header-cell *matHeaderCellDef>Ferro</th>
+					</ng-container>
+					<ng-container matColumnDef="bitola">
+						<th mat-header-cell *matHeaderCellDef>Ø</th>
+					</ng-container>
+					<ng-container matColumnDef="qtde">
+						<th mat-header-cell *matHeaderCellDef>Qtde</th>
+					</ng-container>
+					<ng-container matColumnDef="comp">
+						<th mat-header-cell *matHeaderCellDef>Comp. (m)</th>
+					</ng-container>
+					<ng-container matColumnDef="totalComp">
+						<th mat-header-cell *matHeaderCellDef>Total (m)</th>
+					</ng-container>
+					<ng-container matColumnDef="totalPeso">
+						<th mat-header-cell *matHeaderCellDef>Total (kg)</th>
+					</ng-container>
+					<ng-container matColumnDef="ferros">
+						<th mat-header-cell *matHeaderCellDef></th>
+						<td mat-cell *matCellDef="let el" [attr.colspan]="6">
+							<table mat-table [dataSource]="ferros(el)">
+								<ng-container matColumnDef="numero">
+									<th mat-header-cell *matHeaderCellDef></th>
+									<td mat-cell *matCellDef="let ferro">N{{ferro.numero}}</td>
+								</ng-container>
+								<ng-container matColumnDef="bitola">
+									<th mat-header-cell *matHeaderCellDef></th>
+									<td mat-cell *matCellDef="let ferro">{{ferro.bitola | number: '1.1-1'}}</td>
+								</ng-container>
+								<ng-container matColumnDef="quantidade">
+									<th mat-header-cell *matHeaderCellDef></th>
+									<td mat-cell *matCellDef="let ferro">{{ferro.quantidade}}</td>
+								</ng-container>
+								<ng-container matColumnDef="compUnit">
+									<th mat-header-cell *matHeaderCellDef></th>
+									<td mat-cell *matCellDef="let ferro">{{ferro.compUnit  | number: '1.2-2'}}</td>
+								</ng-container>
+								<ng-container matColumnDef="compTotal">
+									<th mat-header-cell *matHeaderCellDef></th>
+									<td mat-cell *matCellDef="let ferro">{{ferro.compTotal  | number: '1.2-2'}}</td>
+								</ng-container>
+								<ng-container matColumnDef="peso">
+									<th mat-header-cell *matHeaderCellDef></th>
+									<td mat-cell *matCellDef="let ferro">{{ferro.peso  | number: '1.2-2'}}</td>
+								</ng-container>
+								<tr mat-row *matRowDef="let row; columns: ['numero','bitola', 'quantidade', 'compUnit', 'compTotal', 'peso']"></tr>
+							</table>
+						</td>
+					</ng-container>
+					<tr mat-header-row *matHeaderRowDef="['ferro','bitola','qtde','comp','totalComp','totalPeso']"></tr>
+					<tr mat-row *matRowDef="let row; columns: ['elemento']"></tr>
+					<tr mat-row *matRowDef="let row; columns: ['ferros']"></tr>
+				</table>
+			</div>
+		</ng-container>
+	</mat-card-content>
+</mat-card>
