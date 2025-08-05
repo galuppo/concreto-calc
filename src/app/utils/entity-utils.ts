@@ -1,4 +1,4 @@
-import { AttachmentPoint, Block, Circle, Entity, Hatch, HatchArc, HatchEdge, HatchEllipse, HatchLine, MText, point, Point3D, Polyline, Vertex } from "../../../../dxf-writer/lib";
+import { AttachmentPoint, Block, Circle, Entity, Hatch, HatchArc, HatchEdge, HatchEllipse, HatchLine, MText, point, Point3D, Polyline, Table, Vertex } from "../../../../dxf-writer/lib";
 import { BoundingBoxPoint, BoundingBoxUtils } from "./bounding-box-utils";
 import { mirrorPoints, movePoints, rotatePoints } from "./geometry-utils";
 
@@ -26,6 +26,18 @@ export class EntityUtils {
 			v.x = pm.x;
 			v.y = pm.y;
 		}
+	}
+
+	private static rotateTable(table: Table, refPoint: Point3D, angle: number) {
+		table.insertionPoint = rotatePoints([table.insertionPoint], refPoint, angle)[0];
+	}
+
+	private static moveTable(table: Table, origin: Point3D, destiny: Point3D) {
+		table.insertionPoint = movePoints([table.insertionPoint], origin, destiny)[0];
+	}
+
+	private static mirrorTable(table: Table, refP1: Point3D, refP2: Point3D) {
+		table.insertionPoint = mirrorPoints([table.insertionPoint], refP1, refP2)[0];
 	}
 
 	private static rotateMText(mText: MText, refPoint: Point3D, angle: number) {
@@ -211,6 +223,8 @@ export class EntityUtils {
 			this.rotateCircle(entity, refPoint, angle);
 		else if(entity instanceof(Hatch))
 			this.rotateHatch(entity, refPoint, angle);
+		else if(entity instanceof(Table))
+			this.rotateTable(entity, refPoint, angle);
 	}
 
 	public static rotateEntities(entity: Entity[], refPoint: Point3D, angle: number){
@@ -227,6 +241,8 @@ export class EntityUtils {
 			this.moveCircle(entity, origin, destiny);
 		else if(entity instanceof(Hatch))
 			this.moveHatch(entity, origin, destiny);
+		else if(entity instanceof(Table))
+			this.moveTable(entity, origin, destiny);
 	}
 
 	public static moveEntities(entity: Entity[], origin: Point3D, destiny: Point3D){
@@ -243,6 +259,8 @@ export class EntityUtils {
 			this.mirrorCircle(entity, refP1, refP2);
 		else if(entity instanceof(Hatch))
 			this.mirrorHatch(entity, refP1, refP2);
+		else if(entity instanceof(Table))
+			this.mirrorTable(entity, refP1, refP2);
 	}
 
 	public static mirrorEntities(entities: Entity[], refP1: Point3D, refP2: Point3D){

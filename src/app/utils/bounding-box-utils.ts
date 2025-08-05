@@ -1,4 +1,4 @@
-import { angle, BoundingBox, Circle, EntitiesManager, Entity, Hatch, HatchArc, HatchEdge, LWPolyline, MText, point, Point3D, Polyline, PolylineFlags } from "../../../../dxf-writer/lib";
+import { angle, BoundingBox, Circle, EntitiesManager, Entity, Hatch, HatchArc, HatchEdge, LWPolyline, MText, point, Point3D, Polyline, PolylineFlags, Table } from "../../../../dxf-writer/lib";
 import { degreeToRad, pointDistance, rotatePoints } from "./geometry-utils";
 
 export enum BoundingBoxPoint {
@@ -167,6 +167,21 @@ export class BoundingBoxUtils {
 		return rotAng != 0 ? this.bboxRotate(bbox, rotAng, mText.insertionPoint) : bbox;
 	}
 
+	private static getTableBBox(table: Table): BoundingBox {
+		const iPoint = table.insertionPoint;
+		const width = table.columnsCount * table.columnsHeight[0];
+		const height = table.rowsCount * table.rowsHeight[0];
+
+		return {
+			maxX: iPoint.x+width,
+			maxY: iPoint.y,
+			maxZ: 0,
+			minX: iPoint.x,
+			minY: iPoint.y-height,
+			minZ: 0
+		}
+	}
+
 	private static getCircleBBox(circle: Circle): BoundingBox {
 		const r = circle.radius;
 		const center = circle.center;
@@ -225,20 +240,20 @@ export class BoundingBoxUtils {
 	}
 
 	private static getHatchEdgeBBox(edge: HatchEdge): BoundingBox {
-		if(edge instanceof(HatchArc)){
+		if (edge instanceof (HatchArc)) {
 			let center = (edge as HatchArc).center;
 			let r = (edge as HatchArc).radius;
 			return {
-					maxX: center.x+r,
-					maxY: center.y+r,
-					maxZ: 0,
-					minX: center.x-r,
-					minY: center.y-r,
-					minZ: 0
-				}
+				maxX: center.x + r,
+				maxY: center.y + r,
+				maxZ: 0,
+				minX: center.x - r,
+				minY: center.y - r,
+				minZ: 0
+			}
 		}
 		throw new Error("Edge type bounding box not implemented");
-		
+
 	}
 
 	private static getHatchBBox(hatch: Hatch): BoundingBox {
@@ -250,18 +265,18 @@ export class BoundingBoxUtils {
 			minY: Number.MAX_SAFE_INTEGER,
 			minZ: 0
 		}
-		const boundPoints: Point3D[] =[];
-		for(let b of hatch.boundaries){
-			for(let pline of b.polylines){
-				for(let v of pline.vertices)
+		const boundPoints: Point3D[] = [];
+		for (let b of hatch.boundaries) {
+			for (let pline of b.polylines) {
+				for (let v of pline.vertices)
 					boundPoints.push(point(v.x, v.y))
 			}
 
-			for(let edge of b.edges.edges)
+			for (let edge of b.edges.edges)
 				bbox = this.maxBoundingBox([bbox, this.getHatchEdgeBBox(edge)]);
 
 		}
-		if(boundPoints.length>0){
+		if (boundPoints.length > 0) {
 			bbox = this.maxBoundingBox([bbox, this.calcBoundingBox(boundPoints)]);
 		}
 
@@ -289,8 +304,11 @@ export class BoundingBoxUtils {
 			return this.getCircleBBox(entity);
 		if (entity instanceof (Hatch))
 			return this.getHatchBBox(entity);
-		throw new Error("No bounding box method found for entity type");
+		if (entity instanceof (Table))
+			return this.getTableBBox(entity);
 		
+		throw new Error("No bounding box method found for entity type");
+
 	}
 
 	public static getEntitiesBoundingBox(entities: Entity[]): BoundingBox {
@@ -307,13 +325,13 @@ export class BoundingBoxUtils {
 	public static getPoint(bbox: BoundingBox, bboxPoint: BoundingBoxPoint): Point3D {
 		switch (bboxPoint) {
 			case BoundingBoxPoint.TopLeft: return point(bbox.minX, bbox.maxY);
-			case BoundingBoxPoint.TopCenter: return point((bbox.maxX+bbox.minX)/2, bbox.maxY);
+			case BoundingBoxPoint.TopCenter: return point((bbox.maxX + bbox.minX) / 2, bbox.maxY);
 			case BoundingBoxPoint.TopRight: return point(bbox.maxX, bbox.maxY);
-			case BoundingBoxPoint.MidLeft: return point(bbox.minX, (bbox.maxY+bbox.minY)/2);
-			case BoundingBoxPoint.Center: return point((bbox.maxX+bbox.minX)/2, (bbox.maxY+bbox.minY)/2);
-			case BoundingBoxPoint.MidRight: return point(bbox.maxX, (bbox.maxY+bbox.minY)/2);
+			case BoundingBoxPoint.MidLeft: return point(bbox.minX, (bbox.maxY + bbox.minY) / 2);
+			case BoundingBoxPoint.Center: return point((bbox.maxX + bbox.minX) / 2, (bbox.maxY + bbox.minY) / 2);
+			case BoundingBoxPoint.MidRight: return point(bbox.maxX, (bbox.maxY + bbox.minY) / 2);
 			case BoundingBoxPoint.BottomLeft: return point(bbox.minX, bbox.minY);
-			case BoundingBoxPoint.BottomCenter: return point((bbox.maxX+bbox.minX)/2, bbox.minY);
+			case BoundingBoxPoint.BottomCenter: return point((bbox.maxX + bbox.minX) / 2, bbox.minY);
 			case BoundingBoxPoint.BottomRight: return point(bbox.maxX, bbox.minY);
 		}
 	}
@@ -338,27 +356,27 @@ export class BoundingBoxUtils {
 		return this.getPoint(bbox, BoundingBoxPoint.Center);
 	}
 
-	public static getMidRight(bbox: BoundingBox): Point3D{
+	public static getMidRight(bbox: BoundingBox): Point3D {
 		return this.getPoint(bbox, BoundingBoxPoint.MidRight);
 	}
 
-	public static getBottomLeft(bbox: BoundingBox): Point3D{
+	public static getBottomLeft(bbox: BoundingBox): Point3D {
 		return this.getPoint(bbox, BoundingBoxPoint.BottomLeft);
 	}
 
-	public static getBottomCenter(bbox: BoundingBox): Point3D{
+	public static getBottomCenter(bbox: BoundingBox): Point3D {
 		return this.getPoint(bbox, BoundingBoxPoint.BottomCenter);
 	}
 
-	public static getBottomRight(bbox: BoundingBox): Point3D{
+	public static getBottomRight(bbox: BoundingBox): Point3D {
 		return this.getPoint(bbox, BoundingBoxPoint.BottomRight);
 	}
 
 	public static getHeight(bbox: BoundingBox): number {
-		return bbox.maxY-bbox.minY;
+		return bbox.maxY - bbox.minY;
 	}
 
 	public static getWidth(bbox: BoundingBox): number {
-		return bbox.maxX-bbox.minX;
+		return bbox.maxX - bbox.minX;
 	}
 }

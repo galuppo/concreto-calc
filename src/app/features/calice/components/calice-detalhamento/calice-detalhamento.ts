@@ -14,6 +14,10 @@ import { DxfViewDialogComponent } from '../../../dxf/components/dxf-view-dialog/
 import { ArmaduraQuantitativo, ResumoAco } from '../../../armaduras/armadura-quantitativo';
 import { QuantitativoComponent } from "../../../common/components/quantitativo/quantitativo";
 import { DecimalPipe } from '@angular/common';
+import { TabelaAcoDetalhamento } from '../../../armaduras/tabela-aco-detalhamento';
+import { point, Writer } from '../../../../../../../dxf-writer/lib';
+import { EntityUtils } from '../../../../utils/entity-utils';
+import { BoundingBoxPoint } from '../../../../utils/bounding-box-utils';
 
 @Component({
 	selector: 'calice-detalhamento',
@@ -52,6 +56,8 @@ export class CaliceDetalhamentoComponent {
 	protected areaForma: number = 0;
 	protected quantitativoArmadura: ArmaduraQuantitativo | undefined = undefined;
 	protected resumoAco: ResumoAco[] = [];
+	protected escala: number = 25;
+	private dxfWriter: Writer | undefined;
 
 	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
 	@ViewChild(QuantitativoComponent) quantitativoComponent!: QuantitativoComponent;
@@ -94,11 +100,48 @@ export class CaliceDetalhamentoComponent {
 		return round(as.barra.asCm2 * as.quantidade, 3);
 	}
 
-	previsualizar() {
+	private criaDetalhamento(comTabAco: Boolean) {
+		this.dxfWriter = DxfWriterFactory.getNewDefaultWriter();
+		const calDet = new CaliceDetalhamento(this.dxfWriter!.document.seeder);
+		calDet.scale = this.escala;
 
-		const dxfWriter = DxfWriterFactory.getNewDefaultWriter();
-		const calDet = new CaliceDetalhamento(dxfWriter.document.seeder);
-		calDet.criaDetalhamento(this.model).forEach((e) => dxfWriter.document.modelSpace.push(e));
+		//Cria detalhamento do cálice
+		const detCalice = calDet.criaDetalhamento(this.model);
+		detCalice.forEach((e) => this.dxfWriter!.document.modelSpace.push(e))
+
+		if (comTabAco) {
+
+			//Quantifica o aço
+			const qArmadura = new ArmaduraQuantitativo();
+			calDet.quantificaFerros(this.model).forEach((f) => {
+				qArmadura.addBarra(this.model.nome, f);
+			});
+
+			//Cria detalhamento da tabela de aço
+			const tabAcoDet = new TabelaAcoDetalhamento({
+				seeder: this.dxfWriter.document.seeder,
+				cellsTextHeight: 2.5 * this.escala / 10,
+				headerTextHeight: 3 * this.escala / 10,
+			});
+			tabAcoDet.escala = this.escala;
+
+			const tabResumo = tabAcoDet.criaTabelaResumoAco("resumo", qArmadura.getResumoAco());
+
+			EntityUtils.alignEntities([tabResumo], BoundingBoxPoint.TopRight, detCalice, BoundingBoxPoint.BottomRight, point(0, -10*this.escala/10));
+
+			const tabAco = tabAcoDet.criaTabelaDeAco("tab_aco", qArmadura.getTabelaAco());
+
+			EntityUtils.alignEntities(tabAco, BoundingBoxPoint.TopRight, [tabResumo], BoundingBoxPoint.BottomRight, point(0, -10*this.escala/10));
+
+
+			this.dxfWriter.document.modelSpace.push(tabResumo);
+			tabAco.forEach((t) => this.dxfWriter!.document.modelSpace.push(t));
+		}
+
+	}
+
+	previsualizar() {
+		this.criaDetalhamento(false);
 
 		this.matDialog.open(DxfViewDialogComponent, {
 			minHeight: 0,
@@ -107,17 +150,14 @@ export class CaliceDetalhamentoComponent {
 			minWidth: 0,
 			maxWidth: "100%",
 			width: "100%",
-			data: { dxfString: dxfWriter.stringify() }
+			data: { dxfString: this.dxfWriter!.stringify() }
 		});
 
 	}
 
 	getDxfFileUrl(): string {
-		const dxfWriter = DxfWriterFactory.getNewDefaultWriter();
-		const calDet = new CaliceDetalhamento(dxfWriter.document.seeder);
-		calDet.criaDetalhamento(this.model).forEach((e) => dxfWriter.document.modelSpace.push(e));
-		const dxfBlob = new Blob([dxfWriter.stringify()], { type: 'plain/text' });
-
+		this.criaDetalhamento(true);
+		const dxfBlob = new Blob([this.dxfWriter!.stringify()], { type: 'plain/text' });
 		return URL.createObjectURL(dxfBlob);
 	}
 
