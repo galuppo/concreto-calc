@@ -101,8 +101,19 @@ export class CaliceDetalhamento {
 			layerName: AppLayerNames.TEXTOS
 		});
 		ent.push(mText2);
+
+		const mText3 = new MText({
+			seeder: this.seeder,
+			height: 2 * this.scaleCoef, //2.0mm
+			insertionPoint: point(),
+			value: "(x"+multiplo.toLocaleString("pt", {minimumIntegerDigits: 2})+")",
+			attachmentPoint: 1,
+			layerName: AppLayerNames.TEXTOS
+		});
+		ent.push(mText3);
 		
 		EntityUtils.alignEntities([mText2], BoundingBoxPoint.TopLeft, [mText1], BoundingBoxPoint.BottomLeft, point(0, -margin));
+		EntityUtils.alignEntities([mText3], BoundingBoxPoint.BottomLeft, [mText1], BoundingBoxPoint.BottomRight, point(margin));
 
 		return ent;
 	}
