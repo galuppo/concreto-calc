@@ -57,6 +57,7 @@ export class CaliceDetalhamentoComponent {
 	protected quantitativoArmadura: ArmaduraQuantitativo | undefined = undefined;
 	protected resumoAco: ResumoAco[] = [];
 	protected escala: number = 25;
+	protected multiplo: number = 1;
 	private dxfWriter: Writer | undefined;
 
 	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
@@ -106,7 +107,7 @@ export class CaliceDetalhamentoComponent {
 		calDet.scale = this.escala;
 
 		//Cria detalhamento do cálice
-		const detCalice = calDet.criaDetalhamento(this.model);
+		const detCalice = calDet.criaDetalhamento(this.model, this.multiplo);
 		detCalice.forEach((e) => this.dxfWriter!.document.modelSpace.push(e))
 
 		if (comTabAco) {
@@ -114,7 +115,7 @@ export class CaliceDetalhamentoComponent {
 			//Quantifica o aço
 			const qArmadura = new ArmaduraQuantitativo();
 			calDet.quantificaFerros(this.model).forEach((f) => {
-				qArmadura.addBarra(this.model.nome, f);
+				qArmadura.addBarra(this.model.nome, f, this.multiplo);
 			});
 
 			//Cria detalhamento da tabela de aço
@@ -175,13 +176,13 @@ export class CaliceDetalhamentoComponent {
 		const qArmadura = new ArmaduraQuantitativo();
 
 		calDet.quantificaFerros(this.model).forEach((f) => {
-			qArmadura.addBarra(this.model.nome, f);
+			qArmadura.addBarra(this.model.nome, f, this.multiplo);
 		});
 
 		const resumo = qArmadura.getResumoAco();
 
-		this.volConcreto = calDet.quantificaConcreto(this.model);
-		this.areaForma = calDet.quantificaForma(this.model);
+		this.volConcreto = calDet.quantificaConcreto(this.model)*this.multiplo;
+		this.areaForma = calDet.quantificaForma(this.model)*this.multiplo;
 		this.quantitativoArmadura = qArmadura;
 	}
 
