@@ -25,6 +25,9 @@ export class ArmaduraQuantitativo {
 	}
 
 	public addBarra(idElemento: string, armadura: Armadura, multiplicador: number = 1) {
+		if(multiplicador > 1)
+			idElemento += " ("+multiplicador+"x)";
+
 		if(!this.tabelaAco.has(idElemento))
 			this.tabelaAco.set(idElemento, []);
 

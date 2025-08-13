@@ -39,6 +39,8 @@ export class EstacaDetalhamentoComponent {
 	protected quantidade: number = 1;
 	private dxfWriter?: Writer;
 	protected escala: number = 25;
+	protected quantitativoArmadura: ArmaduraQuantitativo | undefined = undefined;
+	protected volConcreto: number = 0;
 	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
 
 	protected classesConcreto: Concreto[] = [
@@ -119,11 +121,11 @@ export class EstacaDetalhamentoComponent {
 
 			const tabResumo = tabAcoDet.criaTabelaResumoAco("resumo", qArmadura.getResumoAco());
 
-			EntityUtils.alignEntities([tabResumo], BoundingBoxPoint.TopRight, dEstaca, BoundingBoxPoint.BottomRight, point(0, -10*this.escala/10));
+			EntityUtils.alignEntities([tabResumo], BoundingBoxPoint.TopRight, dEstaca, BoundingBoxPoint.BottomRight, point(0, -10 * this.escala / 10));
 
 			const tabAco = tabAcoDet.criaTabelaDeAco("tab_aco", qArmadura.getTabelaAco());
 
-			EntityUtils.alignEntities(tabAco, BoundingBoxPoint.TopRight, [tabResumo], BoundingBoxPoint.BottomRight, point(0, -10*this.escala/10));
+			EntityUtils.alignEntities(tabAco, BoundingBoxPoint.TopRight, [tabResumo], BoundingBoxPoint.BottomRight, point(0, -10 * this.escala / 10));
 
 			this.dxfWriter.document.modelSpace.push(tabResumo);
 			tabAco.forEach((t) => this.dxfWriter!.document.modelSpace.push(t));
@@ -157,7 +159,16 @@ export class EstacaDetalhamentoComponent {
 		}
 	}
 	protected quantitativo() {
-		throw new Error('Method not implemented.');
+		const dxfWriter = DxfWriterFactory.getNewDefaultWriter();
+		const detEstaca = new DetalhamentoEstaca(dxfWriter.document.modelSpace.seeder);
+		const qArmadura = new ArmaduraQuantitativo();
+		detEstaca.quantificaFerros(this.model).forEach((f) => {
+			qArmadura.addBarra(this.model.nome, f, this.quantidade);
+		});
+
+		this.volConcreto = detEstaca.quantificaConcreto(this.model)*this.quantidade;
+		this.quantitativoArmadura = qArmadura;
+
 	}
 
 }
