@@ -14,6 +14,8 @@ export interface ArmaduraDetalhamentoOptions {
 	seeder: Seeder,
 	textHeight: number,
 	layerName?: string,
+	lineWeight?: number,
+	maxLengthSize?: number
 }
 
 export class ArmaduraDetalhamento {
@@ -23,7 +25,8 @@ export class ArmaduraDetalhamento {
 		this.options = {
 			seeder: options.seeder,
 			textHeight: options.textHeight,
-			layerName: options.layerName ?? AppLayerNames.ARMADURAS
+			layerName: options.layerName ?? AppLayerNames.ARMADURAS,
+			maxLengthSize: options.maxLengthSize ?? Number.MAX_VALUE
 		}
 	}
 
@@ -50,7 +53,8 @@ export class ArmaduraDetalhamento {
 		const pLine = new Polyline({
 			seeder: this.options.seeder,
 			layerName: this.options.layerName,
-			colorNumber: colorNumber
+			colorNumber: colorNumber,
+			lineWeight: this.options.lineWeight
 		});
 
 		let start = point(0, 0);
@@ -62,7 +66,7 @@ export class ArmaduraDetalhamento {
 		for (let i = 0; i < forma.segmentos.length; i++) {
 			ang += forma.dobras[i] < 0 ? forma.dobras[i] + 360 : forma.dobras[i];
 			ang = ang >= 360 ? ang - 360 : ang;
-			const segmento = forma.segmentos[i];
+			const segmento = forma.segmentos[i] > this.options.maxLengthSize! ? this.options.maxLengthSize : forma.segmentos[i];
 			const vSeg = rotatePoints([point(segmento, 0)], origin, ang)[0];
 			const end = point(start.x + vSeg.x, start.y + vSeg.y);
 
@@ -71,8 +75,9 @@ export class ArmaduraDetalhamento {
 				const uOrtho = orthogonalVector(unitaryVector(start, end));
 				const coef = forma.cotaAcimaDoSegmento[i] ? 1 : -1;
 				const iPoint = point(midPoint.x + uOrtho.x * coef * this.textOffset, midPoint.y + uOrtho.y * coef * this.textOffset);
+				const length = forma.segmentos[i];
 
-				const mText = this.criaTexto(roundUp(segmento, 0).toString(), iPoint, ang);
+				const mText = this.criaTexto(roundUp(length, 0).toString(), iPoint, ang);
 				if (!forma.cotaAcimaDoSegmento[i])
 					mText.attachmentPoint = ang > 90 && ang <= 270 ? AttachmentPoint.BottomCenter : AttachmentPoint.TopCenter
 

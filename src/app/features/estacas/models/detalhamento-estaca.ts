@@ -57,11 +57,16 @@ export class DetalhamentoEstaca {
 		return this._escala / 10;
 	}
 
+	private get maxLenght(): number {
+		return 80*this.coefEscala; //10 cm
+	}
+
 	private getDefaultArmDetOptions(): ArmaduraDetalhamentoOptions {
 		return {
 			seeder: this.seeder,
 			textHeight: 2 * this.coefEscala,
 			layerName: AppLayerNames.ARMADURAS,
+			maxLengthSize: this.maxLenght
 		}
 	}
 
@@ -143,13 +148,9 @@ export class DetalhamentoEstaca {
 	private criaCorteLongitudinal(): Entity[] {
 		const ent: Entity[] = [];
 
-		const gapInterrupcao: number = 25;
+		const gapInterrupcao: number = 15;
 
-		//caso o comprimento da estaca seja muito superior ao da armadura
-		//cria uma linha de parada
-		const interrompeEstaca: boolean = this.model.armLong.comprimento < (this.model.comprimento - 2 * gapInterrupcao);
-
-		const compEstaca: number = interrompeEstaca ? this.model.armLong.comprimento + gapInterrupcao : this.model.comprimento;
+		const compEstaca = this.maxLenght*1.3;
 
 		const pLineContorno = new Polyline({
 			seeder: this.seeder,
@@ -158,34 +159,12 @@ export class DetalhamentoEstaca {
 		});
 		ent.push(pLineContorno);
 
-		pLineContorno.add(point(0, -(compEstaca - gapInterrupcao)));
+		pLineContorno.add(point(0, -compEstaca));
 		pLineContorno.add(point());
 		pLineContorno.add(point(this.model.diametro, 0));
-		pLineContorno.add(point(this.model.diametro, -(compEstaca - gapInterrupcao)));
-		if (!interrompeEstaca) {
-			pLineContorno.add(point(0, -(compEstaca - gapInterrupcao)));
-		} else {
-			//Linha de parada
-			const lParada1 = this.criaLinhaDeParada(point(0, -(compEstaca - gapInterrupcao)), point(this.model.diametro, -(compEstaca - gapInterrupcao)));
-			lParada1.forEach((e) => ent.push(e));
-
-			const pLinePonta = new Polyline({
-				seeder: this.seeder,
-				layerName: AppLayerNames.FORMAS,
-				lineWeight: -2
-			});
-			ent.push(pLinePonta);
-
-			pLinePonta.add(point(0, -compEstaca));
-			pLinePonta.add(point(0, -(compEstaca + gapInterrupcao)));
-			pLinePonta.add(point(this.model.diametro, -(compEstaca + gapInterrupcao)));
-			pLinePonta.add(point(this.model.diametro, -compEstaca));
-
-			const lParada2 = this.criaLinhaDeParada(point(this.model.diametro, -compEstaca), point(0, -compEstaca));
-			lParada2.forEach((e) => ent.push(e));
-		}
-
-
+		pLineContorno.add(point(this.model.diametro, -compEstaca));
+		pLineContorno.add(point(0, -compEstaca));
+		
 		return ent;
 	}
 
@@ -254,9 +233,9 @@ export class DetalhamentoEstaca {
 	private criaArmadurasCorteLong(bboxCorte: BoundingBox): Entity[] {
 		const ent: Entity[] = [];
 
-		const compN1 = this.model.armLong.comprimento;
+		
 
-		const forma = FormaArmaduraFactory.retaVertical(compN1);
+		const forma = FormaArmaduraFactory.retaVertical(this.maxLenght);
 		forma.cotaSegmento[0] = false;
 
 		const lbNecN1 = this.getLbNecN1();
@@ -272,8 +251,10 @@ export class DetalhamentoEstaca {
 		const corteTopLeft = BoundingBoxUtils.getTopLeft(bboxCorte);
 		const corteTopRight = BoundingBoxUtils.getTopRight(bboxCorte);
 
-		EntityUtils.moveEntities(ferro1, point(), point(corteTopLeft.x + this.model.cobrimento, corteTopLeft.y - (compN1 - lbNecN1)));
-		EntityUtils.moveEntities(ferro2, point(), point(corteTopRight.x - this.model.cobrimento, corteTopRight.y - (compN1 - lbNecN1)));
+		const arranque = 25;
+
+		EntityUtils.moveEntities(ferro1, point(), point(corteTopLeft.x + this.model.cobrimento, corteTopLeft.y - (this.maxLenght - arranque)));
+		EntityUtils.moveEntities(ferro2, point(), point(corteTopRight.x - this.model.cobrimento, corteTopRight.y - (this.maxLenght - arranque)));
 
 
 		//Cota as armaduras
@@ -289,11 +270,14 @@ export class DetalhamentoEstaca {
 		const dim = new AppDim(this.seeder, dimStyle);
 
 		const p1 = point(tR.x + this.model.cobrimento, tR.y);
-		const p2 = point(p1.x, p1.y - lbNecN1);
-		const p3 = point(p1.x, p1.y - compN1);
-		const d1 = dim.linearDim([p1, p2, p3], false);
+		const p2 = point(p1.x, p1.y - arranque);
+		const p3 = point(p1.x, p1.y - this.maxLenght);
+		const d1 = dim.linearDim([p1, p2], false, lbNecN1.toString());
 		d1.forEach((e) => ent.push(e));
 		const bboxD1 = BoundingBoxUtils.getEntitiesBoundingBox(d1);
+
+		const comp = this.armaduras[0].comprimento - lbNecN1;
+		dim.linearDim([p2, p3], false, comp.toString()).forEach((e) => ent.push(e));
 
 		//Cota N2
 		const n2 = this.armaduras[1];

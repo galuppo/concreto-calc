@@ -38,7 +38,7 @@ export class EstacaDetalhamentoComponent {
 	protected model: Estaca;
 	protected quantidade: number = 1;
 	private dxfWriter?: Writer;
-	protected escala: number = 50;
+	protected escala: number = 25;
 	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
 
 	protected classesConcreto: Concreto[] = [
