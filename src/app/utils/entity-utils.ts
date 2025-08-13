@@ -1,6 +1,6 @@
-import { AttachmentPoint, Block, Circle, Entity, Hatch, HatchArc, HatchEdge, HatchEllipse, HatchLine, MText, point, Point3D, Polyline, Table, Vertex } from "../../../../dxf-writer/lib";
+import { Arc, AttachmentPoint, Block, Circle, Entity, Hatch, HatchArc, HatchEdge, HatchEllipse, HatchLine, MText, point, Point3D, Polyline, Table, Vertex } from "../../../../dxf-writer/lib";
 import { BoundingBoxPoint, BoundingBoxUtils } from "./bounding-box-utils";
-import { mirrorPoints, movePoints, rotatePoints } from "./geometry-utils";
+import { findAngleDegree, mirrorPoints, movePoints, polarToCartesian, rotatePoints, unitaryVector } from "./geometry-utils";
 
 export class EntityUtils {
 
@@ -38,6 +38,37 @@ export class EntityUtils {
 
 	private static mirrorTable(table: Table, refP1: Point3D, refP2: Point3D) {
 		table.insertionPoint = mirrorPoints([table.insertionPoint], refP1, refP2)[0];
+	}
+
+	private static rotateArc(arc: Arc, refPoint: Point3D, angle: number) {
+		arc.center = rotatePoints([arc.center], refPoint, angle)[0];
+		
+		const start = arc.startAngle + angle;
+		const sMult = Math.trunc(start/360);
+		arc.startAngle = start - 360*sMult;
+
+		const end = arc.endAngle + angle;
+		const eMult = Math.trunc(end/360);
+		arc.endAngle = end - 360*eMult;
+	}
+
+	private static moveArc(arc: Arc, origin: Point3D, destiny: Point3D) {
+		arc.center = movePoints([arc.center], origin, destiny)[0];
+	}
+
+	private static mirrorArc(arc: Arc, refP1: Point3D, refP2: Point3D) {
+		const pStart = polarToCartesian(arc.center, arc.radius, arc.startAngle);
+		const pEnd = polarToCartesian(arc.center, arc.radius, arc.endAngle);
+		const mirPoints = mirrorPoints([arc.center, pStart, pEnd], refP1, refP2);
+		
+		arc.center = mirPoints[0];
+
+		const uStart = unitaryVector(arc.center, mirPoints[2]);
+		arc.startAngle = findAngleDegree(uStart.x, uStart.y);
+
+		const uEnd = unitaryVector(arc.center, mirPoints[1]);
+		arc.endAngle = findAngleDegree(uEnd.x, uEnd.y);
+		
 	}
 
 	private static rotateMText(mText: MText, refPoint: Point3D, angle: number) {
@@ -225,6 +256,8 @@ export class EntityUtils {
 			this.rotateHatch(entity, refPoint, angle);
 		else if(entity instanceof(Table))
 			this.rotateTable(entity, refPoint, angle);
+		else if(entity instanceof(Arc))
+			this.rotateArc(entity, refPoint, angle);
 	}
 
 	public static rotateEntities(entity: Entity[], refPoint: Point3D, angle: number){
@@ -243,6 +276,8 @@ export class EntityUtils {
 			this.moveHatch(entity, origin, destiny);
 		else if(entity instanceof(Table))
 			this.moveTable(entity, origin, destiny);
+		else if(entity instanceof(Arc))
+			this.moveArc(entity, origin, destiny);
 	}
 
 	public static moveEntities(entity: Entity[], origin: Point3D, destiny: Point3D){
@@ -261,6 +296,8 @@ export class EntityUtils {
 			this.mirrorHatch(entity, refP1, refP2);
 		else if(entity instanceof(Table))
 			this.mirrorTable(entity, refP1, refP2);
+		else if (entity instanceof(Arc))
+			this.mirrorArc(entity, refP1, refP2);
 	}
 
 	public static mirrorEntities(entities: Entity[], refP1: Point3D, refP2: Point3D){

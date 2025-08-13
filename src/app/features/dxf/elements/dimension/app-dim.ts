@@ -20,6 +20,7 @@ export interface DimStyle {
 	layerName?: string;
 	supressExtensionLine?: boolean;
 	supressDimensionLine?: boolean;
+	lineWeight?: number;
 }
 
 
@@ -43,7 +44,8 @@ export class AppDim {
 			colorNumber: defaultStyle.colorNumber,
 			layerName: defaultStyle.layerName ?? AppLayerNames.COTAS,
 			supressExtensionLine: defaultStyle.supressExtensionLine ?? false,
-			supressDimensionLine: defaultStyle.supressDimensionLine ?? false
+			supressDimensionLine: defaultStyle.supressDimensionLine ?? false,
+			lineWeight: defaultStyle.lineWeight
 		};
 		this.currentStyle = this._defaultStyle;
 	}
@@ -67,6 +69,7 @@ export class AppDim {
 		this.currentStyle.colorNumber = dimStyle.colorNumber ?? this._defaultStyle.colorNumber;
 		this.currentStyle.supressExtensionLine = dimStyle.supressExtensionLine ?? this._defaultStyle.supressExtensionLine;
 		this.currentStyle.supressDimensionLine = dimStyle.supressDimensionLine ?? this._defaultStyle.supressDimensionLine;
+		this.currentStyle.lineWeight = dimStyle.lineWeight ?? this._defaultStyle.lineWeight;
 	}
 
 	public static getDefaultStyle(scaleCoef: number): DimStyle {
@@ -90,7 +93,8 @@ export class AppDim {
 		const pline = new Polyline({
 			seeder: this.seeder,
 			layerName: this.currentStyle.layerName,
-			colorNumber: this.currentStyle.colorNumber
+			colorNumber: this.currentStyle.colorNumber,
+			lineWeight: this.currentStyle.lineWeight
 		});
 
 		const gap = this.currentStyle.extensionLineGapFromReference!;
@@ -113,7 +117,8 @@ export class AppDim {
 		const pline = new Polyline({
 			seeder: this.seeder,
 			layerName: this.currentStyle.layerName,
-			colorNumber: this.currentStyle.colorNumber
+			colorNumber: this.currentStyle.colorNumber,
+			lineWeight: this.currentStyle.lineWeight
 		});
 
 		const dLineOffset = this.currentStyle.offsetDimensionLineFromReference!;
@@ -128,7 +133,8 @@ export class AppDim {
 			seeder: this.seeder,
 			size: this.currentStyle.arrowHeadSize!,
 			type: this.currentStyle.arrowHead!,
-			colorNumber: this.currentStyle.colorNumber
+			colorNumber: this.currentStyle.colorNumber,
+			lineWeight: this.currentStyle.lineWeight
 		};
 
 		const vDir = directionVector(pStart, pEnd);

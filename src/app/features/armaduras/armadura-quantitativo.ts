@@ -30,7 +30,7 @@ export class ArmaduraQuantitativo {
 
 		const qElemento = this.tabelaAco.get(idElemento)!;
 
-		const quantidade = armadura.multiplo!*armadura.quantidade*multiplicador;
+		const quantidade = (armadura.multiplo ?? 1)*armadura.quantidade*multiplicador;
 		const compTotal = armadura.comprimento*quantidade/100;
 		const peso = compTotal*armadura.barra.kgM;
 

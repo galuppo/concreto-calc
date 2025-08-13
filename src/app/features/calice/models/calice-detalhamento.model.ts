@@ -7,7 +7,7 @@ import { ArmaduraDetalhamento, ArmaduraDetalhamentoOptions } from "../../armadur
 import { ArmaduraQuantitativo } from "../../armaduras/armadura-quantitativo";
 import { FormaArmaduraFactory } from "../../armaduras/forma-factory";
 import { Armadura } from "../../armaduras/models/armadura.model";
-import { FormaArmadura } from "../../armaduras/models/forma-armadura.model";
+import { FormaArmadura, FormaArmaduraReta } from "../../armaduras/models/forma-armadura.model";
 import { ClassesConcreto, TipoAncoragem } from "../../concreto/models/concreto.model";
 import { AppDim } from "../../dxf/elements/dimension/app-dim";
 import { ArrowHeadType } from "../../dxf/elements/dimension/arrow-head-factory";
@@ -78,7 +78,7 @@ export class CaliceDetalhamento {
 		return 2 * this.scaleCoef;
 	}
 
-	private criaSecaoTitulo(): Entity[] {
+	private criaSecaoTitulo(multiplo: number): Entity[] {
 		const ent: Entity[] =[];
 		const margin: number = 2 * this.scaleCoef; //mm
 
@@ -666,7 +666,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.maxX - this.model.espessuraColarinho + this.model.cobInterno - n5raio,
 			bboxColarinho.maxY - this.model.espessuraColarinho + this.model.cobInterno + n1diam
 		);
-		det.detalhaArmaduraEmCorte(n5, 2, sPoint, ePoint, true).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(n5, 2, sPoint, ePoint, true).forEach((e) => ent.push(e));
 
 		//Cria as armaduras N5 inferior
 		//Calcula ponto de início da N5 inferior
@@ -680,7 +680,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.minY + (this.model.espessuraColarinho - this.model.cobInterno - n1diam - n5raio)
 		);
 
-		det.detalhaArmaduraEmCorte(n5, 2, sPoint, ePoint, true).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(n5, 2, sPoint, ePoint, true).forEach((e) => ent.push(e));
 
 		return ent;
 	}
@@ -704,7 +704,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.minX + this.model.espessuraColarinho - (this.model.cobInterno + n2diam + n6raio),
 			bboxColarinho.minY + this.model.espessuraColarinho - (this.model.cobInterno - n6raio)
 		);
-		let entN6 = det.detalhaArmaduraEmCorte(n6, 2, sPoint, ePoint, false);
+		let entN6 = det.detalhaArmaduraCamadas(n6, 2, sPoint, ePoint, false);
 		for (let e of entN6)
 			ent.push(e);
 
@@ -718,7 +718,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.maxX - this.model.cobExterno - n2diam - n6raio,
 			ePoint.y
 		);
-		entN6 = det.detalhaArmaduraEmCorte(n6, 2, sPoint, ePoint, false);
+		entN6 = det.detalhaArmaduraCamadas(n6, 2, sPoint, ePoint, false);
 		for (let e of entN6)
 			ent.push(e);
 
@@ -743,7 +743,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.minX + this.model.espessuraColarinho - (this.model.cobInterno + n1diam + n7raio),
 			bboxColarinho.maxY - (this.model.espessuraColarinho - (this.model.cobInterno + n1diam + n7raio))
 		);
-		let entN7 = det.detalhaArmaduraEmCorte(n7, 2, sPoint, ePoint, true);
+		let entN7 = det.detalhaArmaduraCamadas(n7, 2, sPoint, ePoint, true);
 		for (let e of entN7)
 			ent.push(e);
 
@@ -756,7 +756,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.maxX - this.model.cobExterno - n1diam - n7raio,
 			ePoint.y
 		);
-		entN7 = det.detalhaArmaduraEmCorte(n7, 2, sPoint, ePoint, true);
+		entN7 = det.detalhaArmaduraCamadas(n7, 2, sPoint, ePoint, true);
 		for (let e of entN7)
 			ent.push(e);
 
@@ -769,7 +769,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.minX + this.model.espessuraColarinho - (this.model.cobInterno + n1diam + n7raio),
 			bboxColarinho.minY + this.model.cobExterno + n1diam + n7raio
 		);
-		entN7 = det.detalhaArmaduraEmCorte(n7, 2, sPoint, ePoint, true);
+		entN7 = det.detalhaArmaduraCamadas(n7, 2, sPoint, ePoint, true);
 		for (let e of entN7)
 			ent.push(e);
 
@@ -782,7 +782,7 @@ export class CaliceDetalhamento {
 			bboxColarinho.maxX - this.model.cobExterno - n1diam - n7raio,
 			ePoint.y
 		);
-		entN7 = det.detalhaArmaduraEmCorte(n7, 2, sPoint, ePoint, true);
+		entN7 = det.detalhaArmaduraCamadas(n7, 2, sPoint, ePoint, true);
 		for (let e of entN7)
 			ent.push(e);
 
@@ -920,7 +920,7 @@ export class CaliceDetalhamento {
 		//Cota		
 		dim.linearDim([point(startEsq.x, endEsq.y), startEsq], false, asPrinc.quantidade + " N" + asPrinc.numero).forEach((e) => ent.push(e));
 		//Armadura
-		det.detalhaArmaduraEmCorte(asPrinc, 2, startEsq, endEsq, false).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(asPrinc, 2, startEsq, endEsq, false).forEach((e) => ent.push(e));
 		
 		//Direita
 		//Cota
@@ -928,7 +928,7 @@ export class CaliceDetalhamento {
 		let endDir = point(topRight.x - (esp-cobInt), topRight.y - emb3);
 		dim.linearDim([startDir, point(startDir.x, endDir.y)], false, asPrinc.quantidade + " N" + asPrinc.numero).forEach((e) => ent.push(e));
 		//Armadura
-		det.detalhaArmaduraEmCorte(asPrinc, 2, startDir, endDir, false).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(asPrinc, 2, startDir, endDir, false).forEach((e) => ent.push(e));
 
 		//Armadura horizontal secundária 
 		dimStyle.colorNumber = asSec.numero;
@@ -941,7 +941,7 @@ export class CaliceDetalhamento {
 		//Armadura
 		startEsq.y = startEsq.y - asSec.espacamento!;
 		endEsq.y = endEsq.y + asSec.espacamento!;
-		det.detalhaArmaduraEmCorte(asSec, 2, startEsq, endEsq, false).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(asSec, 2, startEsq, endEsq, false).forEach((e) => ent.push(e));
 
 		//Direita
 		//Cota
@@ -951,7 +951,7 @@ export class CaliceDetalhamento {
 		//Armadura
 		startDir.y = startDir.y - asSec.espacamento!;
 		endDir.y = endDir.y + asSec.espacamento!;
-		det.detalhaArmaduraEmCorte(asSec, 2, startDir, endDir, false).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(asSec, 2, startDir, endDir, false).forEach((e) => ent.push(e));
 
 		//Armadura horizontal principal inferior
 		dimStyle.colorNumber = asPrinc.numero;
@@ -962,21 +962,22 @@ export class CaliceDetalhamento {
 		endEsq.y = startEsq.y - emb3;
 		dim.linearDim([point(startEsq.x, endEsq.y), startEsq], false, asPrinc.quantidade + " N" + asPrinc.numero).forEach((e) => ent.push(e));
 		//Armadura
-		det.detalhaArmaduraEmCorte(asPrinc, 2, startEsq, endEsq, false).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(asPrinc, 2, startEsq, endEsq, false).forEach((e) => ent.push(e));
 		//Direita
 		//Cota
 		startDir.y = endDir.y - asSec.espacamento!;
 		endDir.y = startDir.y - emb3;
 		dim.linearDim([startDir, point(startDir.x, endDir.y)], false, asPrinc.quantidade + " N" + asPrinc.numero).forEach((e) => ent.push(e));
 		//Armadura
-		det.detalhaArmaduraEmCorte(asPrinc, 2, startDir, endDir, false).forEach((e) => ent.push(e));
+		det.detalhaArmaduraCamadas(asPrinc, 2, startDir, endDir, false).forEach((e) => ent.push(e));
 
 		//Armadura vertical
-		const forma: FormaArmadura = {
-			segmentos: Object.assign([], asVert.forma!.segmentos),
-			dobras: Object.assign([], asVert.forma!.dobras),
-			cotaSegmento: Object.assign([], asVert.forma!.cotaSegmento),
-			cotaAcimaDoSegmento: Object.assign([], asVert.forma!.cotaAcimaDoSegmento)
+		const formaOri = asVert.forma! as FormaArmaduraReta;
+		const forma: FormaArmaduraReta = {
+			segmentos: Object.assign([], formaOri.segmentos),
+			dobras: Object.assign([], formaOri.dobras),
+			cotaSegmento: Object.assign([], formaOri.cotaSegmento),
+			cotaAcimaDoSegmento: Object.assign([], formaOri.cotaAcimaDoSegmento)
 		}
 		for(let i = 0; i < forma.cotaSegmento.length ; i++)
 			forma.cotaSegmento[i] = false;
@@ -1238,10 +1239,11 @@ export class CaliceDetalhamento {
 
 		//N6 Esquerda
 		const n6 = this.armaduras[5];
+		const n6Forma = n6.forma! as FormaArmaduraReta;
 		const detN6_e = det.detalhaArmadura(n6, false);
 		detN6_e.forEach((e) => ent.push(e));
 		//Posiciona a armadura
-		let pOri = point(n6.forma!.segmentos[1], n6.forma!.segmentos[0]);
+		let pOri = point(n6Forma.segmentos[1], n6Forma.segmentos[0]);
 		let pDest = BoundingBoxUtils.getBottomCenter(bboxCorteA);
 		pDest.x -= this.model.pilarX/2+this.model.espessuraJunta+this.model.cobInterno+n2.barra.dmm/10;
 		pDest.y -= this.margemArmaduras;
@@ -1251,7 +1253,7 @@ export class CaliceDetalhamento {
 		const detN6_d = det.detalhaArmadura(n6, false);
 		detN6_d.forEach((e) => ent.push(e));
 		//Posiciona armadura
-		pOri = point(0, n6.forma!.segmentos[0]);
+		pOri = point(0, n6Forma.segmentos[0]);
 		pDest = BoundingBoxUtils.getBottomCenter(bboxCorteA);
 		pDest.x += this.model.pilarX/2+this.model.espessuraJunta+this.model.cobInterno+n2.barra.dmm/10;
 		pDest.y -= this.margemArmaduras;
@@ -1259,19 +1261,21 @@ export class CaliceDetalhamento {
 
 		//N7
 		const n7 = this.armaduras[6];
+		const n7Forma = n7.forma! as FormaArmaduraReta;
 		const detN7 = det.detalhaArmadura(n7, false);
 		detN7.forEach((e) => ent.push(e));
 		//Posiciona armadura
-		pOri = point(n7.forma!.segmentos[1]/2, n7.forma!.segmentos[0]);
+		pOri = point(n7Forma.segmentos[1]/2, n7Forma.segmentos[0]);
 		pDest = middlePoint(BoundingBoxUtils.getBottomRight(bboxCorteA), BoundingBoxUtils.getBottomLeft(bboxCorteB));
 		EntityUtils.moveEntities(detN7, pOri, pDest);
 
 		//N5 esquerda
 		const n5 = this.armaduras[4];
+		const n5Forma = n5.forma! as FormaArmaduraReta;
 		const detN5_e = det.detalhaArmadura(n5, false);
 		detN5_e.forEach((e) => ent.push(e));
 		//Posiciona a armadura
-		pOri = point(n5.forma!.segmentos[1], n5.forma!.segmentos[0]);
+		pOri = point(n5Forma.segmentos[1], n5Forma.segmentos[0]);
 		pDest = BoundingBoxUtils.getBottomCenter(bboxCorteB);
 		pDest.x -= this.model.pilarY/2+this.model.espessuraJunta+this.model.cobInterno+n1.barra.dmm/10;
 		pDest.y -= this.margemArmaduras;
@@ -1282,7 +1286,7 @@ export class CaliceDetalhamento {
 		const detN5_d = det.detalhaArmadura(n5, false);
 		detN5_d.forEach((e) => ent.push(e));
 		//Posiciona a armadura
-		pOri = point(0, n5.forma!.segmentos[0]);
+		pOri = point(0, n5Forma.segmentos[0]);
 		pDest = BoundingBoxUtils.getBottomCenter(bboxCorteB);
 		pDest.x += this.model.pilarY/2+this.model.espessuraJunta+this.model.cobInterno+n1.barra.dmm/10;
 		pDest.y -= this.margemArmaduras;
@@ -1391,11 +1395,11 @@ export class CaliceDetalhamento {
 		return ent;
 	}
 
-	public criaDetalhamento(calice: Calice): Entity[] {
+	public criaDetalhamento(calice: Calice, multiplo: number = 1): Entity[] {
 		const ent: Entity[] = [];
 		this.model = calice;
 
-		const titulo = this.criaSecaoTitulo();
+		const titulo = this.criaSecaoTitulo(multiplo);
 		titulo.forEach((e) => ent.push(e));
 
 		const formas = this.criaFormas();

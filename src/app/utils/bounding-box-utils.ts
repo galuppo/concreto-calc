@@ -1,5 +1,5 @@
-import { angle, BoundingBox, Circle, EntitiesManager, Entity, Hatch, HatchArc, HatchEdge, LWPolyline, MText, point, Point3D, Polyline, PolylineFlags, Table } from "../../../../dxf-writer/lib";
-import { degreeToRad, pointDistance, rotatePoints } from "./geometry-utils";
+import { angle, Arc, BoundingBox, Circle, EntitiesManager, Entity, Hatch, HatchArc, HatchEdge, LWPolyline, MText, point, Point3D, Polyline, PolylineFlags, Table } from "../../../../dxf-writer/lib";
+import { degreeToRad, findAngleQuadrant, pointDistance, polarToCartesian, rotatePoints } from "./geometry-utils";
 
 export enum BoundingBoxPoint {
 	TopLeft,
@@ -173,11 +173,11 @@ export class BoundingBoxUtils {
 		const height = table.rowsCount * table.rowsHeight[0];
 
 		return {
-			maxX: iPoint.x+width,
+			maxX: iPoint.x + width,
 			maxY: iPoint.y,
 			maxZ: 0,
 			minX: iPoint.x,
-			minY: iPoint.y-height,
+			minY: iPoint.y - height,
 			minZ: 0
 		}
 	}
@@ -283,6 +283,78 @@ export class BoundingBoxUtils {
 		return bbox;
 	}
 
+	private static getArcBBox(arc: Arc): BoundingBox {
+		const bbox: BoundingBox = {
+			maxX: arc.center.x + arc.radius,
+			maxY: arc.center.y + arc.radius,
+			maxZ: 0,
+			minX: arc.center.x - arc.radius,
+			minY: arc.center.y - arc.radius,
+			minZ: 0
+		}
+
+		const aStart = arc.startAngle >= 360 ? arc.startAngle - 360 : arc.startAngle;
+		const aEnd = arc.endAngle >= 360 ? arc.endAngle - 360 : arc.endAngle;
+
+		//Define os quadrantes do início e fim
+		const qStart = findAngleQuadrant(aStart);
+		const qEnd = findAngleQuadrant(aEnd);
+
+
+		//Se os pontos estão no mesmo quadrante e o inicio ocorre num angulo maior que o fim
+		//o arco é quase um circulo
+		if((qStart == qEnd) && (aStart > aEnd))
+			return bbox;
+		
+		//Define os pontos de início e fim
+		const pStart = polarToCartesian(arc.center, arc.radius, aStart);
+		const pEnd = polarToCartesian(arc.center, arc.radius, aEnd);
+
+		//Caso os pontos estejam no mesmo quadrante, a bbox é a bbox dos pontos
+		if(qStart == qEnd)
+			return this.calcBoundingBox([pStart, pEnd]);
+
+		if(qStart == 1 && qEnd == 2){
+			bbox.maxX = pStart.x;
+			bbox.minX = pEnd.x;
+			bbox.minY = Math.min(pStart.y, pEnd.y);
+		} else if (qStart == 1 && qEnd == 3) {
+			bbox.maxX = pStart.x;
+			bbox.minY = pEnd.y;
+		} else if (qStart == 1 && qEnd == 4) {
+			bbox.maxX = Math.max(pStart.x, pEnd.x);
+		} else if (qStart == 2 && qEnd == 1) {
+			bbox.maxY = Math.max(pStart.y, pEnd.y);
+		} else if (qStart == 2 && qEnd == 3) {
+			bbox.maxY = pStart.y;
+			bbox.maxX = Math.max(pStart.x, pEnd.x);
+			bbox.minY = pEnd.y;
+		} else if (qStart == 2 && qEnd == 4) {
+			bbox.maxY = pStart.y;
+			bbox.maxX = pEnd.x;
+		} else if (qStart == 3 && qEnd == 1) {
+			bbox.minX = pStart.x;
+			bbox.maxY = pEnd.y;
+		} else if (qStart == 3 && qEnd == 2) {
+			bbox.minX = Math.min(pStart.x, pEnd.x);
+		} else if (qStart == 3 && qEnd == 4) {
+			bbox.minX = pStart.x;
+			bbox.maxX = pEnd.x;
+			bbox.maxY = Math.max(pStart.y, pEnd.y)
+		} else if (qStart == 4 && qEnd == 1){
+			bbox.minX = Math.min(pStart.x, pEnd.x);
+			bbox.minY = pStart.y;
+			bbox.maxY = pEnd.y;
+		} else if (qStart == 4 && qEnd == 2){
+			bbox.minX = pEnd.x;
+			bbox.minY = pStart.y;
+		} else if (qStart == 4 && qEnd == 3){
+			bbox.minY = Math.min(pStart.y, pEnd.y);
+		}
+	
+		return bbox;
+	}
+
 	public static drawBBox(modelSpace: EntitiesManager, bbox: BoundingBox) {
 		const pline = modelSpace.addPolyline({
 			flags: PolylineFlags.Closed
@@ -306,7 +378,9 @@ export class BoundingBoxUtils {
 			return this.getHatchBBox(entity);
 		if (entity instanceof (Table))
 			return this.getTableBBox(entity);
-		
+		if (entity instanceof (Arc))
+			return this.getArcBBox(entity);
+
 		throw new Error("No bounding box method found for entity type");
 
 	}

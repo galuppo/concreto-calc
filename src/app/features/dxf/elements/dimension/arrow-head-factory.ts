@@ -11,7 +11,8 @@ export interface ArrowHeadParams {
 	size: number,
 	seeder: Seeder,
 	layerName: string,
-	colorNumber?: number
+	colorNumber?: number,
+	lineWeight?: number
 }
 
 export class ArrowHeadFactory{
@@ -20,7 +21,8 @@ export class ArrowHeadFactory{
 		const pline = new Polyline({
 			seeder: params.seeder,
 			colorNumber: params.colorNumber,
-			layerName: params.layerName
+			layerName: params.layerName,
+			lineWeight: params.lineWeight
 		});
 		pline.add(point(-params.size/2));
 		pline.add(point(params.size/2,0));
@@ -34,7 +36,8 @@ export class ArrowHeadFactory{
 			center: point(),
 			radius: params.size*0.5,
 			layerName: params.layerName,
-			colorNumber: params.colorNumber
+			colorNumber: params.colorNumber,
+			lineWeight: params.lineWeight
 		});
 
 		const innerCircle = new Circle({
@@ -42,7 +45,8 @@ export class ArrowHeadFactory{
 			center: point(),
 			radius: params.size*0.25,
 			layerName: params.layerName,
-			colorNumber: params.colorNumber
+			colorNumber: params.colorNumber,
+			lineWeight: params.lineWeight
 		});
 
 		return [outerCircle, innerCircle];

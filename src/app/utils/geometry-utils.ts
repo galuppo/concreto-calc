@@ -109,3 +109,26 @@ export function middlePoint(p1: Point3D, p2: Point3D): Point3D {
 	const vDir = directionVector(p1, p2);
 	return point(p1.x + 0.5*vDir.x, p1.y + 0.5*vDir.y);
 }
+
+export function findAngleQuadrant(angle: number): number {
+	const mult = Math.trunc(angle/360);
+	angle = angle - 360*mult;
+
+	if(angle <= 90)
+		return 1;
+	else if (angle <= 180)
+		return 2;
+	else if (angle <= 270)
+		return 3;
+	else if (angle <= 360)
+		return 4;
+
+	throw new Error("Coulnd't find angle quadrant! (angle = "+angle+")");
+}
+
+export function polarToCartesian(o: Point3D, r: number, angle: number): Point3D{
+	const angRad = degreeToRad(angle);
+	const dx = r*Math.cos(angRad);
+	const dy = r*Math.sin(angRad);
+	return point(o.x+dx, o.y+dy);
+}

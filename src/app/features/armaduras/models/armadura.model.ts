@@ -1,6 +1,6 @@
 import { roundUp } from "../../../utils/number-utils";
 import { BarraDeAco, BarrasDeAco } from "./barra-aco.model";
-import { FormaArmadura } from "./forma-armadura.model";
+import { FormaArmadura, isFormaCircular, isFormaReta } from "./forma-armadura.model";
 
 export interface ArmaduraParams {
 	multiplo?: number;
@@ -59,9 +59,17 @@ export class Armadura {
 		if(!this.forma)
 			return 0;
 		let comp = 0;
-		for(let s of this.forma.segmentos)
+
+		if(isFormaReta(this.forma)){
+			for(let s of this.forma.segmentos)
 			comp += roundUp(s,0);
-		return comp;
+		}else if (isFormaCircular(this.forma)){
+			comp += Math.PI*this.forma.diametro;
+			comp += this.forma.transpasse;
+			comp += this.forma.gancho*2;
+		}
+		
+		return roundUp(comp,0);
 	}
 
 
