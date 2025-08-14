@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { DxfWriterFactory } from '../../../dxf/dxf-writer-factory';
 import { Calice } from '../../models/calice.model';
 import { ClassesConcreto, Concreto } from '../../../concreto/models/concreto.model';
@@ -18,6 +18,9 @@ import { TabelaAcoDetalhamento } from '../../../armaduras/tabela-aco-detalhament
 import { point, Writer } from '../../../../../../../dxf-writer/lib';
 import { EntityUtils } from '../../../../utils/entity-utils';
 import { BoundingBoxPoint } from '../../../../utils/bounding-box-utils';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { CaliceListComponent } from "../calice-list/calice-list";
+import { CaliceService } from '../../services/calice-service';
 
 @Component({
 	selector: 'calice-detalhamento',
@@ -28,13 +31,14 @@ import { BoundingBoxPoint } from '../../../../utils/bounding-box-utils';
 		FormsModule,
 		ReactiveFormsModule,
 		QuantitativoComponent,
-		DecimalPipe
+		DecimalPipe,
+		MatExpansionModule,
+		CaliceListComponent
 	],
 	templateUrl: './calice-detalhamento.html',
 	styleUrl: './calice-detalhamento.scss'
 })
-export class CaliceDetalhamentoComponent {
-
+export class CaliceDetalhamentoComponent implements AfterViewInit {
 	protected model: Calice;
 	protected classesConcreto: Concreto[] = [
 		ClassesConcreto.C20,
@@ -62,8 +66,12 @@ export class CaliceDetalhamentoComponent {
 
 	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
 	@ViewChild(QuantitativoComponent) quantitativoComponent!: QuantitativoComponent;
+	@ViewChild(CaliceListComponent) caliceList!: CaliceListComponent;
 
-	constructor(private matDialog: MatDialog) {
+	constructor(
+		private matDialog: MatDialog,
+		private caliceService: CaliceService
+	) {
 		this.model = {
 			nome: 'Cal01',
 			pilarX: 30,
@@ -97,6 +105,15 @@ export class CaliceDetalhamentoComponent {
 		}
 	}
 
+	ngAfterViewInit(): void {
+		this.caliceList.onEdit().subscribe((cal) => {
+			if(cal){
+				this.model = cal.model;
+				this.multiplo = cal.quantidade;
+			}
+		})
+	}
+
 	protected calculaAsEfetivo(as: Armadura): number {
 		return round(as.barra.asCm2 * as.quantidade, 3);
 	}
@@ -128,11 +145,11 @@ export class CaliceDetalhamentoComponent {
 
 			const tabResumo = tabAcoDet.criaTabelaResumoAco("resumo", qArmadura.getResumoAco());
 
-			EntityUtils.alignEntities([tabResumo], BoundingBoxPoint.TopRight, detCalice, BoundingBoxPoint.BottomRight, point(0, -10*this.escala/10));
+			EntityUtils.alignEntities([tabResumo], BoundingBoxPoint.TopRight, detCalice, BoundingBoxPoint.BottomRight, point(0, -10 * this.escala / 10));
 
 			const tabAco = tabAcoDet.criaTabelaDeAco("tab_aco", qArmadura.getTabelaAco());
 
-			EntityUtils.alignEntities(tabAco, BoundingBoxPoint.TopRight, [tabResumo], BoundingBoxPoint.BottomRight, point(0, -10*this.escala/10));
+			EntityUtils.alignEntities(tabAco, BoundingBoxPoint.TopRight, [tabResumo], BoundingBoxPoint.BottomRight, point(0, -10 * this.escala / 10));
 
 
 			this.dxfWriter.document.modelSpace.push(tabResumo);
@@ -141,7 +158,7 @@ export class CaliceDetalhamentoComponent {
 
 	}
 
-	previsualizar() {
+	protected previsualizar() {
 		this.criaDetalhamento(false);
 
 		this.matDialog.open(DxfViewDialogComponent, {
@@ -156,13 +173,13 @@ export class CaliceDetalhamentoComponent {
 
 	}
 
-	getDxfFileUrl(): string {
+	protected getDxfFileUrl(): string {
 		this.criaDetalhamento(true);
 		const dxfBlob = new Blob([this.dxfWriter!.stringify()], { type: 'plain/text' });
 		return URL.createObjectURL(dxfBlob);
 	}
 
-	download() {
+	protected download() {
 		if (this.downloadLinkAnchor) {
 			(this.downloadLinkAnchor.nativeElement as HTMLAnchorElement).href = this.getDxfFileUrl();
 			(this.downloadLinkAnchor.nativeElement as HTMLAnchorElement).download = this.model.nome + ".dxf";
@@ -170,7 +187,7 @@ export class CaliceDetalhamentoComponent {
 		}
 	}
 
-	quantitativo() {
+	protected quantitativo() {
 		const dxfWriter = DxfWriterFactory.getNewDefaultWriter();
 		const calDet = new CaliceDetalhamento(dxfWriter.document.seeder);
 		const qArmadura = new ArmaduraQuantitativo();
@@ -181,9 +198,13 @@ export class CaliceDetalhamentoComponent {
 
 		const resumo = qArmadura.getResumoAco();
 
-		this.volConcreto = calDet.quantificaConcreto(this.model)*this.multiplo;
-		this.areaForma = calDet.quantificaForma(this.model)*this.multiplo;
+		this.volConcreto = calDet.quantificaConcreto(this.model) * this.multiplo;
+		this.areaForma = calDet.quantificaForma(this.model) * this.multiplo;
 		this.quantitativoArmadura = qArmadura;
+	}
+
+	protected salvar() {
+		this.caliceService.insert({ model: this.model, quantidade: this.multiplo });
 	}
 
 }

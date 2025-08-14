@@ -1,4 +1,14 @@
 <div class="w-100" style="min-height: 600px; min-width: 375px;">
+	<mat-accordion class="mt-2">
+		<mat-expansion-panel>
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					Cálices Salvos
+				</mat-panel-title>				
+			</mat-expansion-panel-header>
+			<calice-list></calice-list>
+		</mat-expansion-panel>
+	</mat-accordion>
 	<mat-card appearance="outlined">
 		<mat-card-content>
 			<mat-card class="d-flex float-start m-2">
@@ -13,7 +23,8 @@
 						</div>
 						<div class="input-group">
 							<span class="input-group-text">Quantidade</span>
-							<input name="quantidae" type="number" step="1" min="1" class="form-control" [(ngModel)]="multiplo">
+							<input name="quantidae" type="number" step="1" min="1" class="form-control"
+								[(ngModel)]="multiplo">
 						</div>
 						<div class="mt-3 rounded border p-1">
 							<label class="form-label h5" for="secaoPilar">Pilar</label>
@@ -58,20 +69,21 @@
 							</select>
 						</div> -->
 						<div class="mt-3 rounded border p-1">
-							<label for="armHorzPrincipal" class="form-label h5">Armadura Horizontal Principal</label>
+							<label for="armHorzPrincipal" class="form-label h5">Armadura Horizontal
+								Principal</label>
 							<div class="input-group" id="armHorzPrincipal">
 								<span class="input-group-text">Ø</span>
 								<select name="armHorzPrincipal" [(ngModel)]="model.armHorzPrincipal!.barra">
 									@for(barra of barrasAco; track barra){
-										<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
+									<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
 									}
 								</select>
 								<span class="input-group-text ms-3">Quantidade:</span>
 								<input name="qtdeHorzPrincipal" type="number" class="form-control"
-									[(ngModel)]="model.armHorzPrincipal!.quantidade"
-									min="1">
+									[(ngModel)]="model.armHorzPrincipal!.quantidade" min="1">
 								<span class="input-group-text ms-3">As:</span>
-								<input type="number" class="form-control" [value]="calculaAsEfetivo(model.armHorzPrincipal!)*2" disabled>
+								<input type="number" class="form-control"
+									[value]="calculaAsEfetivo(model.armHorzPrincipal!)*2" disabled>
 								<span class="input-group-text">cm²</span>
 							</div>
 						</div>
@@ -81,15 +93,15 @@
 								<span class="input-group-text">Ø</span>
 								<select name="armHorzSec" [(ngModel)]="model.armHorzSecundaria!.barra">
 									@for(barra of barrasAco; track barra){
-										<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
+									<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
 									}
 								</select>
 								<span class="input-group-text ms-3">Quantidade:</span>
 								<input name="qtdeHorzSec" type="number" class="form-control"
-									[(ngModel)]="model.armHorzSecundaria!.quantidade"
-									min="1">
+									[(ngModel)]="model.armHorzSecundaria!.quantidade" min="1">
 								<span class="input-group-text ms-3">As:</span>
-								<input type="number" class="form-control" [value]="calculaAsEfetivo(model.armHorzSecundaria!)*2" disabled>
+								<input type="number" class="form-control"
+									[value]="calculaAsEfetivo(model.armHorzSecundaria!)*2" disabled>
 								<span class="input-group-text">cm²</span>
 							</div>
 						</div>
@@ -99,15 +111,15 @@
 								<span class="input-group-text">Ø</span>
 								<select name="armVertPrinc" [(ngModel)]="model.armVertPrincipal!.barra">
 									@for(barra of barrasAco; track barra){
-										<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
+									<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
 									}
 								</select>
 								<span class="input-group-text ms-3">Quantidade:</span>
 								<input name="qtdeVertPrinc" type="number" class="form-control"
-									[(ngModel)]="model.armVertPrincipal!.quantidade"
-									min="1">
+									[(ngModel)]="model.armVertPrincipal!.quantidade" min="1">
 								<span class="input-group-text ms-3">As:</span>
-								<input type="number" class="form-control" [value]="calculaAsEfetivo(model.armVertPrincipal!)*2" disabled>
+								<input type="number" class="form-control"
+									[value]="calculaAsEfetivo(model.armVertPrincipal!)*2" disabled>
 								<span class="input-group-text">cm²</span>
 							</div>
 						</div>
@@ -117,15 +129,15 @@
 								<span class="input-group-text">Ø</span>
 								<select name="armVertSec" [(ngModel)]="model.armVertSecundaria!.barra">
 									@for(barra of barrasAco; track barra){
-										<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
+									<option [ngValue]="barra">{{barra.dmm | number: "1.1-1"}}</option>
 									}
 								</select>
 								<span class="input-group-text ms-3">Quantidade:</span>
 								<input name="qtdeVertPrinc" type="number" class="form-control"
-									[(ngModel)]="model.armVertSecundaria!.quantidade"
-									min="1">
+									[(ngModel)]="model.armVertSecundaria!.quantidade" min="1">
 								<span class="input-group-text ms-3">As:</span>
-								<input type="number" class="form-control" [value]="calculaAsEfetivo(model.armVertSecundaria!)*2" disabled>
+								<input type="number" class="form-control"
+									[value]="calculaAsEfetivo(model.armVertSecundaria!)*2" disabled>
 								<span class="input-group-text">cm²</span>
 							</div>
 						</div>
@@ -135,11 +147,13 @@
 					<button mat-flat-button (click)="previsualizar()">Pré-visualizar</button>
 					<a mat-flat-button (click)="download()">Download</a>
 					<button mat-flat-button (click)="quantitativo()">Gerar Quantitativo</button>
+					<button mat-flat-button (click)="salvar()">Salvar</button>
 					<a #downloadLink style="display: none;"></a>
 				</mat-card-actions>
 			</mat-card>
-			<quantitativo class="d-flex m-2 float-start" [volConcreto]="volConcreto"
-				[areaForma]="areaForma" [armaduras]="quantitativoArmadura"></quantitativo>
+			<quantitativo class="d-flex m-2 float-start" [volConcreto]="volConcreto" [areaForma]="areaForma"
+				[armaduras]="quantitativoArmadura"></quantitativo>
 		</mat-card-content>
 	</mat-card>
+
 </div>

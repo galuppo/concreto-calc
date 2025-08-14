@@ -1,0 +1,55 @@
+<div class="container m-2">
+	<table mat-table [dataSource]="calices">
+		<!-- Coluna nome -->
+		<ng-container matColumnDef="nome">
+			<th mat-header-cell *matHeaderCellDef>Nome</th>
+			<td mat-cell *matCellDef="let record">{{record.model.nome}}</td>
+		</ng-container>
+		<!-- Coluna quantidade -->
+		<ng-container matColumnDef="quantidade">
+			<th mat-header-cell *matHeaderCellDef>Qtde.</th>
+			<td mat-cell *matCellDef="let record">{{record.quantidade}}</td>
+		</ng-container>
+		<!-- Coluna pilar -->
+		<ng-container matColumnDef="pilar">
+			<th mat-header-cell *matHeaderCellDef>Pilar</th>
+			<td mat-cell *matCellDef="let record">Larg:{{record.model.pilarX}} Alt: {{record.model.pilarY}}</td>
+		</ng-container>
+		<!-- Coluna calice -->
+		<ng-container matColumnDef="calice">
+			<th mat-header-cell *matHeaderCellDef>Calice</th>
+			<td mat-cell *matCellDef="let record">Colarinho:{{record.model.espessuraColarinho}} Junta: {{record.model.espessuraJunta}} Emb: {{record.model.embutimento}}</td>
+		</ng-container>
+		<!-- Coluna As Horz Principal -->
+		<ng-container matColumnDef="asHPrinc">
+			<th mat-header-cell *matHeaderCellDef>As Horz Principal</th>
+			<td mat-cell *matCellDef="let record">Ø:{{record.model.armHorzPrincipal!.barra.dmm  | number : '1.1-1'}} Qtde: {{record.model.armHorzPrincipal!.quantidade}}</td>
+		</ng-container>
+		<!-- Coluna As Horz Secundária -->
+		<ng-container matColumnDef="asHSec">
+			<th mat-header-cell *matHeaderCellDef>As Horz Secundário</th>
+			<td mat-cell *matCellDef="let record">Ø:{{record.model.armHorzSecundaria!.barra.dmm | number : '1.1-1'}} Qtde: {{record.model.armHorzSecundaria!.quantidade}}</td>
+		</ng-container>
+		<!-- Coluna As Vert Principal -->
+		<ng-container matColumnDef="asVPrinc">
+			<th mat-header-cell *matHeaderCellDef>As Vert Principal</th>
+			<td mat-cell *matCellDef="let record">Ø:{{record.model.armVertPrincipal!.barra.dmm | number : '1.1-1'}} Qtde: {{record.model.armVertPrincipal!.quantidade}}</td>
+		</ng-container>
+		<!-- Coluna As Vert Secundaria -->
+		<ng-container matColumnDef="asVSec">
+			<th mat-header-cell *matHeaderCellDef>As Vert Secundária</th>
+			<td mat-cell *matCellDef="let record">Ø:{{record.model.armVertSecundaria!.barra.dmm | number : '1.1-1'}} Qtde: {{record.model.armVertSecundaria!.quantidade}}</td>
+		</ng-container>
+		<!-- Coluna actions -->
+		<ng-container matColumnDef="actions">
+			<th mat-header-cell *matHeaderCellDef></th>
+			<td mat-cell *matCellDef="let record">
+				<button mat-icon-button (click)="onClickEdit(record)"><mat-icon style="transform: scale(0.85)">edit</mat-icon></button>
+				<button mat-icon-button (click)="onClickDelete(record)"><mat-icon style="color: red; transform: scale(0.85);">delete</mat-icon></button>
+			</td>
+		</ng-container>
+
+		<tr mat-header-row *matHeaderRowDef="['nome','quantidade','pilar', 'calice', 'asHPrinc', 'asHSec', 'asVPrinc', 'asVSec', 'actions']"></tr>
+		<tr mat-row *matRowDef="let record; columns:['nome', 'quantidade', 'pilar', 'calice', 'asHPrinc', 'asHSec', 'asVPrinc', 'asVSec', 'actions']"></tr>
+	</table>
+</div>
