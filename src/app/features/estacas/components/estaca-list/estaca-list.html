@@ -1,0 +1,46 @@
+<div class="mt-2">
+	<table mat-table [dataSource]="estacas">
+		<!-- Coluna nome -->
+		<ng-container matColumnDef="nome">
+			<th mat-header-cell *matHeaderCellDef>Nome</th>
+			<td mat-cell *matCellDef="let record">{{record.model.nome}}</td>
+		</ng-container>
+		<!-- Coluna quantidade -->
+		<ng-container matColumnDef="quantidade">
+			<th mat-header-cell *matHeaderCellDef>Qtde.</th>
+			<td mat-cell *matCellDef="let record">{{record.quantidade}}</td>
+		</ng-container>
+		<!-- Coluna diametro -->
+		<ng-container matColumnDef="diam">
+			<th mat-header-cell *matHeaderCellDef>Diâmetro</th>
+			<td mat-cell *matCellDef="let record">{{record.model.diametro}} cm</td>
+		</ng-container>
+		<!-- Coluna profundidade -->
+		<ng-container matColumnDef="prof">
+			<th mat-header-cell *matHeaderCellDef>Profundidade</th>
+			<td mat-cell *matCellDef="let record">{{record.model.comprimento}} cm</td>
+		</ng-container>
+		<!-- Coluna armadura longitudinal -->
+		<ng-container matColumnDef="asLong">
+			<th mat-header-cell *matHeaderCellDef>As Longitudinal</th>
+			<td mat-cell *matCellDef="let record">{{record.model.armLong.quantidade}} Ø{{record.model.armLong.barra.dmm}} C={{record.model.armLong.comprimento}}</td>
+		</ng-container>
+		<!-- Coluna estribos -->
+		<ng-container matColumnDef="asEstribos">
+			<th mat-header-cell *matHeaderCellDef>As Estribos</th>
+			<td mat-cell *matCellDef="let record">Ø{{record.model.armEstribo.barra.dmm}} c/{{record.model.armEstribo.espacamento}}</td>
+		</ng-container>
+		<!-- Coluna actions -->
+		<ng-container matColumnDef="actions">
+			<th mat-header-cell *matHeaderCellDef></th>
+			<td mat-cell *matCellDef="let record">
+				<button mat-icon-button (click)="onClickEdit(record)"><mat-icon style="transform: scale(0.85)">edit</mat-icon></button>
+				<button mat-icon-button (click)="onClickDelete(record)"><mat-icon style="color: red; transform: scale(0.85);">delete</mat-icon></button>
+			</td>
+		</ng-container>
+
+		<tr mat-header-row *matHeaderRowDef="['nome','quantidade','diam','prof','asLong','asEstribos','actions']"></tr>
+		<tr mat-row *matRowDef="let record; columns:['nome','quantidade','diam','prof','asLong','asEstribos', 'actions']"></tr>
+
+	</table>
+</div>

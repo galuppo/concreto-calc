@@ -66,3 +66,18 @@ export const BarrasDeAco = {
 	Ø20: new BarraDeAco(BitolaBarraDeAco.Ø20),
 	Ø25: new BarraDeAco(BitolaBarraDeAco.Ø25)
 }
+
+export function getBarraDeAco(bit: number): BarraDeAco {
+	switch (bit) {
+		case 5: return BarrasDeAco.Ø5;
+		case 6.3: return BarrasDeAco.Ø6_3;
+		case 8: return BarrasDeAco.Ø8;
+		case 10: return BarrasDeAco.Ø10;
+		case 12.5: return BarrasDeAco.Ø12_5;
+		case 16: return BarrasDeAco.Ø16;
+		case 20: return BarrasDeAco.Ø20;
+		case 25: return BarrasDeAco.Ø25;
+	}
+	throw new Error("Bitola não identificada! (Ø=" + bit + ")");
+
+}

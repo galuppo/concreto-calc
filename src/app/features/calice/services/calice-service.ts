@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Calice } from '../models/calice.model';
 import { Armadura } from '../../armaduras/models/armadura.model';
-import { BarraDeAco, BarrasDeAco } from '../../armaduras/models/barra-aco.model';
+import { BarraDeAco, BarrasDeAco, getBarraDeAco } from '../../armaduras/models/barra-aco.model';
 import { Concreto } from '../../concreto/models/concreto.model';
 import { BehaviorSubject } from 'rxjs';
 
@@ -51,21 +51,6 @@ export class CaliceService {
 		}
 	}
 
-	private getBarraDeAco(bit: number): BarraDeAco {
-		switch (bit) {
-			case 5: return BarrasDeAco.Ø5;
-			case 6.3: return BarrasDeAco.Ø6_3;
-			case 8: return BarrasDeAco.Ø8;
-			case 10: return BarrasDeAco.Ø10;
-			case 12.5: return BarrasDeAco.Ø12_5;
-			case 16: return BarrasDeAco.Ø16;
-			case 20: return BarrasDeAco.Ø20;
-			case 25: return BarrasDeAco.Ø25;
-		}
-		throw new Error("Bitola não identificada! (Ø="+bit+")");
-		
-	}
-
 	private load() {
 		const stor = localStorage.getItem("calices");
 		if (stor) {
@@ -77,28 +62,28 @@ export class CaliceService {
 					multiplo: r.armHorzPrincipal.multiplo,
 					quantidade: r.armHorzPrincipal.quantidade,
 					numero: r.armHorzPrincipal.numero,
-					barra: this.getBarraDeAco(r.armHorzPrincipal.bitBarra),
+					barra: getBarraDeAco(r.armHorzPrincipal.bitBarra),
 					espacamento: r.armHorzPrincipal.espacamento
 				});
 				const asHSec = new Armadura({
 					multiplo: r.armHorzSecundaria.multiplo,
 					quantidade: r.armHorzSecundaria.quantidade,
 					numero: r.armHorzSecundaria.numero,
-					barra: this.getBarraDeAco(r.armHorzSecundaria.bitBarra),
+					barra: getBarraDeAco(r.armHorzSecundaria.bitBarra),
 					espacamento: r.armHorzSecundaria.espacamento
 				});
 				const asVPrinc = new Armadura({
 					multiplo: r.armVertPrincipal.multiplo,
 					quantidade: r.armVertPrincipal.quantidade,
 					numero: r.armVertPrincipal.numero,
-					barra: this.getBarraDeAco(r.armVertPrincipal.bitBarra),
+					barra: getBarraDeAco(r.armVertPrincipal.bitBarra),
 					espacamento: r.armVertPrincipal.espacamento
 				});
 				const asVSec = new Armadura({
 					multiplo: r.armVertSecundaria.multiplo,
 					quantidade: r.armVertSecundaria.quantidade,
 					numero: r.armVertSecundaria.numero,
-					barra: this.getBarraDeAco(r.armVertSecundaria.bitBarra),
+					barra: getBarraDeAco(r.armVertSecundaria.bitBarra),
 					espacamento: r.armVertSecundaria.espacamento
 				});
 				const cal: Calice = {

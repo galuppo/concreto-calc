@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { QuantitativoComponent } from "../../../common/components/quantitativo/quantitativo";
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +20,9 @@ import { FormaArmaduraReta } from '../../../armaduras/models/forma-armadura.mode
 import { ArmaduraQuantitativo } from '../../../armaduras/armadura-quantitativo';
 import { TabelaAcoDetalhamento } from '../../../armaduras/tabela-aco-detalhamento';
 import { EntityUtils } from '../../../../utils/entity-utils';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { EstacaListComponent } from "../estaca-list/estaca-list";
+import { EstacaService } from '../../services/estaca-service';
 
 @Component({
 	selector: 'estaca-detalhamento',
@@ -28,12 +31,15 @@ import { EntityUtils } from '../../../../utils/entity-utils';
 		QuantitativoComponent,
 		MatButtonModule,
 		CommonModule,
-		FormsModule
+		FormsModule,
+		MatExpansionModule,
+		EstacaListComponent
 	],
 	templateUrl: './estaca-detalhamento.html',
 	styleUrl: './estaca-detalhamento.scss'
 })
-export class EstacaDetalhamentoComponent {
+export class EstacaDetalhamentoComponent implements AfterViewInit {
+
 
 	protected model: Estaca;
 	protected quantidade: number = 1;
@@ -42,6 +48,7 @@ export class EstacaDetalhamentoComponent {
 	protected quantitativoArmadura: ArmaduraQuantitativo | undefined = undefined;
 	protected volConcreto: number = 0;
 	@ViewChild('downloadLink') downloadLinkAnchor!: ElementRef;
+	@ViewChild(EstacaListComponent) estacaList!: EstacaListComponent;
 
 	protected classesConcreto: Concreto[] = [
 		ClassesConcreto.C20,
@@ -61,7 +68,10 @@ export class EstacaDetalhamentoComponent {
 	];
 
 
-	constructor(private matDialog: MatDialog) {
+	constructor(
+		private matDialog: MatDialog,
+		private estacaService: EstacaService
+	) {
 		this.model = {
 			nome: 'E01',
 			diametro: 30,
@@ -81,6 +91,29 @@ export class EstacaDetalhamentoComponent {
 				espacamento: 15
 			})
 		}
+	}
+	ngAfterViewInit(): void {
+		this.estacaList.onEdit().subscribe((est) => {
+			if(est){
+				this.model.nome = est.model.nome;
+				this.model.diametro = est.model.diametro;
+				this.model.comprimento = est.model.comprimento;
+				this.model.cobrimento = est.model.cobrimento;
+				this.model.concreto = est.model.concreto;
+
+				this.model.armLong.barra = est.model.armLong.barra;
+				this.model.armLong.quantidade = est.model.armLong.quantidade;
+				this.model.armLong.forma = FormaArmaduraFactory.retaVertical(est.model.armLong.comprimento);
+
+				this.model.armEstribo.barra = est.model.armEstribo.barra;
+				this.model.armEstribo.quantidade = est.model.armEstribo.quantidade;
+				this.model.armEstribo.espacamento = est.model.armEstribo.espacamento;
+
+				this.quantidade = est.quantidade;
+
+				this.quantitativo();
+			}
+		})
 	}
 
 	protected get compArmLong(): number {
@@ -166,9 +199,12 @@ export class EstacaDetalhamentoComponent {
 			qArmadura.addBarra(this.model.nome, f, this.quantidade);
 		});
 
-		this.volConcreto = detEstaca.quantificaConcreto(this.model)*this.quantidade;
+		this.volConcreto = detEstaca.quantificaConcreto(this.model) * this.quantidade;
 		this.quantitativoArmadura = qArmadura;
 
+	}
+	protected salvar() {
+		this.estacaService.insert({model: this.model, quantidade: this.quantidade});
 	}
 
 }

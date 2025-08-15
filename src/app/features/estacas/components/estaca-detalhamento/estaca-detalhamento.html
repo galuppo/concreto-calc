@@ -1,4 +1,12 @@
 <div class="w-100" style="min-height: 600px; min-width: 375px;">
+	<mat-accordion class="mt-2">
+		<mat-expansion-panel>
+			<mat-expansion-panel-header>
+				<mat-panel-title>Estacas Salvas</mat-panel-title>
+			</mat-expansion-panel-header>
+			<estaca-list></estaca-list>
+		</mat-expansion-panel>
+	</mat-accordion>
 	<mat-card appearance="outlined">
 		<mat-card-content>
 			<mat-card class="d-flex float-start m-2">
@@ -70,6 +78,7 @@
 					<button mat-flat-button (click)="previsualizar()">Pré-visualizar</button>
 					<a mat-flat-button (click)="download()">Download</a>
 					<button mat-flat-button (click)="quantitativo()">Gerar Quantitativo</button>
+					<button mat-flat-button (click)="salvar()">Salvar</button>
 					<a #downloadLink style="display: none;"></a>
 				</mat-card-actions>
 			</mat-card>

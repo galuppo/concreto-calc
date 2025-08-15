@@ -108,7 +108,28 @@ export class CaliceDetalhamentoComponent implements AfterViewInit {
 	ngAfterViewInit(): void {
 		this.caliceList.onEdit().subscribe((cal) => {
 			if(cal){
-				this.model = cal.model;
+				this.model.nome = cal.model.nome;
+				this.model.pilarX = cal.model.pilarX;
+				this.model.pilarY = cal.model.pilarY;
+				this.model.espessuraColarinho = cal.model.espessuraColarinho;
+				this.model.espessuraJunta = cal.model.espessuraJunta;
+				this.model.embutimento = cal.model.embutimento;
+				this.model.cobExterno = cal.model.cobExterno;
+				this.model.cobInterno = cal.model.cobInterno;
+				this.model.concreto = cal.model.concreto;
+
+				this.model.armHorzPrincipal!.barra = cal.model.armHorzPrincipal!.barra; 
+				this.model.armHorzPrincipal!.quantidade = cal.model.armHorzPrincipal!.quantidade;
+				
+				this.model.armHorzSecundaria!.barra = cal.model.armHorzSecundaria!.barra; 
+				this.model.armHorzSecundaria!.quantidade = cal.model.armHorzSecundaria!.quantidade;
+
+				this.model.armVertPrincipal!.barra = cal.model.armVertPrincipal!.barra; 
+				this.model.armVertPrincipal!.quantidade = cal.model.armVertPrincipal!.quantidade;
+
+				this.model.armVertSecundaria!.barra = cal.model.armVertSecundaria!.barra; 
+				this.model.armVertSecundaria!.quantidade = cal.model.armVertSecundaria!.quantidade;
+
 				this.multiplo = cal.quantidade;
 			}
 		})
