@@ -7,17 +7,29 @@
 		<div class="list-group list-group-flush">
 			<div class="list-group-item list-group-item-action" (click)="toggle('calice')">
 				<span class="h4">Cálice</span>
-				<div class="list-group list-group-flush" *ngIf="visible('calice')">
-					<div class="list-group-item list-group-item-action w-100" (click)="redirect('calice/detalhamento'); drawer.toggle()">Detalhamento</div>
-					<!-- <div class="list-group-item list-group-item-action" (click)="$event.stopPropagation()" disabled>Dimensionamento</div> -->
-				</div>
+				@if(visible('calice')) {
+					<div class="list-group list-group-flush">
+						<div class="list-group-item list-group-item-action w-100" (click)="redirect('calice/detalhamento'); drawer.toggle()">Detalhamento</div>
+						<div class="list-group-item list-group-item-action" (click)="redirect('calice/dimensionamento'); drawer.toggle()" disabled>Dimensionamento</div>
+					</div>
+				}				
+			</div>
+			<div class="list-group-item list-group-item-action" (click)="toggle('bloco')">
+				<span class="h4">Bloco de coroamento</span>
+				@if(visible('bloco')){
+					<div class="list-group list-group-flush">
+						<div class="list-group-item list-group-item-action w-100" (click)="redirect('bloco/reacao_estacas'); drawer.toggle()">Reação em estacas</div>
+					</div>
+				}
 			</div>
 			<div class="list-group-item list-group-item-action" (click)="toggle('estaca')">
 				<span class="h4">Estaca</span>
-				<div class="list-group list-group-flush" *ngIf="visible('estaca')">
-					<div class="list-group-item list-group-item-action w-100" (click)="redirect('estaca/detalhamento'); drawer.toggle()">Detalhamento</div>
-					<!-- <div class="list-group-item list-group-item-action" (click)="$event.stopPropagation()" disabled>Dimensionamento</div> -->
-				</div>
+				@if(visible('estaca')){
+					<div class="list-group list-group-flush">
+						<div class="list-group-item list-group-item-action w-100" (click)="redirect('estaca/detalhamento'); drawer.toggle()">Detalhamento</div>
+						<!-- <div class="list-group-item list-group-item-action" (click)="$event.stopPropagation()" disabled>Dimensionamento</div> -->
+					</div>
+				}				
 			</div>
 		</div>
 	</mat-drawer>

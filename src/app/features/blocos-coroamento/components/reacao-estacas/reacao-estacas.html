@@ -1,0 +1,76 @@
+<div class="w-100">
+	<mat-card appearance="outlined">
+		<mat-card-content>
+			<mat-card class="d-flex float-start m-2">
+				<mat-card-content>
+					<form>
+						<div>
+							<div class="rounded border p-1">
+								<label class="form-label h5" for="loads">Cargas</label>
+								<div id="loads">
+									<div class="input-group">
+										<span class="input-group-text">N</span>
+										<input type="number" name="loadVert" class="form-control" [(ngModel)]="N">
+										<span class="input-group-text">tf</span>
+									</div>
+									<div class="input-group">
+										<span class="input-group-text">Mx</span>
+										<input type="number" name="loadMx" class="form-control" [(ngModel)]="Mx">
+										<span class="input-group-text">tf.m</span>
+									</div>
+									<div class="input-group">
+										<span class="input-group-text">My</span>
+										<input type="number" name="loadMy" class="form-control" [(ngModel)]="My">
+										<span class="input-group-text">tf.m</span>
+									</div>
+								</div>
+								<!-- <div class="">
+									<canvas #canConvencao width="100px" height="100px" class="border"></canvas>
+								</div> -->
+							</div>
+
+						</div>
+						<div>
+							<div class="rounded border p-1">
+								<label class="form-label h5" for="bloco">Bloco</label>
+								<div id="bloco">
+									<div class="input-group">
+										<span class="input-group-text">Ø Estaca</span>
+										<input type="number" name="diamEstaca" class="form-control" [(ngModel)]="dEstaca">
+										<span class="input-group-text">cm</span>
+									</div>
+									<div class="input-group">
+										<span class="input-group-text">Espaçamento entre eixos das estacas</span>
+										<input type="number" name="espEstacas" class="form-control" [(ngModel)]="dEixoEstaca">
+										<span class="input-group-text">cm</span>
+									</div>
+									<div class="input-group">
+										<span class="input-group-text">Altura do bloco</span>
+										<input type="number" name="hBloco" class="form-control" [(ngModel)]="hBloco">
+										<span class="input-group-text">cm</span>
+									</div>
+									<div class="input-group">
+										<span class="input-group-text">Distância mínima entre a face da estaca e face do bloco</span>
+										<input type="number" name="dEstBloco" class="form-control" [(ngModel)]="dFaceBloco">
+										<span class="input-group-text">cm</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div>
+						<mat-tab-group animationDuration="0ms" (selectedTabChange)="onTabChange($event)">
+							<mat-tab label="2 Estacas" id="tab2E" class="align-content-center">
+								<canvas #can2Estacas width="300px" height="300px" class="border"></canvas>
+							</mat-tab>
+							<mat-tab label="3 Estacas">3 Estacas</mat-tab>
+							<mat-tab label="4 Estacas">4 Estacas</mat-tab>
+							<mat-tab label="5 Estacas">5 Estacas</mat-tab>
+							<mat-tab label="6 Estacas">6 Estacas</mat-tab>
+						</mat-tab-group>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		</mat-card-content>
+	</mat-card>
+</div>
